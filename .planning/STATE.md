@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 current_phase: 04.2
 current_phase_name: Split HAOO into its Own Repository and Domain (INSERTED)
 status: executing
-stopped_at: Completed 04.2-01-PLAN.md
-last_updated: "2026-09-05T20:54:58.703Z"
+stopped_at: Completed 04.2-02-PLAN.md
+last_updated: "2026-09-05T21:31:27.492Z"
 last_activity: 2026-09-05
 last_activity_desc: Phase 04.2 execution started
-state_head: 49ec1c6866969efd667efb57c9f6fd4049987e99
+state_head: 66c593de08fa31abd61547de1bb3153449b9bafd
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 55
-  completed_plans: 45
+  completed_plans: 46
   percent: 29
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-08-29)
 ## Current Position
 
 Phase: 04.2 (Split HAOO into its Own Repository and Domain (INSERTED)) — EXECUTING
-Plan: 2 of 9
+Plan: 3 of 9
 Total Plans in Phase: 9
 Status: Ready to execute
 Last activity: 2026-09-05 — Phase 04.2 execution started
@@ -90,6 +90,7 @@ Progress: 43/46 plans ([███░░░░░░░] 29%)
 | Phase 04.1 P10 | 18 min | 3 tasks | 5 files |
 | Phase 04.1 P11 | 22 min | 3 tasks | 9 files |
 | Phase 04.2 P01 | 6 min | 3 tasks | 3 files |
+| Phase 04.2 P02 | 15 min | 3 tasks | 30 files |
 
 ## Accumulated Context
 
@@ -201,6 +202,8 @@ Recent decisions affecting current work:
 - [Phase 04.2]: New repository is KaruguDev/HAOO (created empty; made PUBLIC 2026-09-06 so Pages publishes on the free plan); Lipa-Nyumba explicitly not reused
 - [Phase 04.2]: Retired ZPH asset URLs are let go and 404 — nothing copied into the ZPH tree, no retention claimed; D-12's recovery document for the retired page still ships
 - [Phase 04.2]: PROD-06's reuse-across-products half is withdrawn under a named successor rather than deleted; the in-code withdrawal lands in plan 04.2-02
+- [Phase 04.2]: HAOO split by full clone plus one deleting commit — 431 commits preserved, every cited SHA still resolves — D-01/D-02: a filter-repo rewrite would have force-pushed over every clone and broken the SHA citations across .planning/
+- [Phase 04.2]: The four product assets moved to /brochure/ in plan 04.2-02, not 04.2-03 — Owner decision (b) makes the seven path constants, PRODUCT_ASSETS, the alternate link and the noscript href edits; they must land in the same commit as the moved files or the suite is red
 
 ### Pending Todos
 
@@ -224,6 +227,7 @@ None yet.
 - 04.1: the three GitHub Actions repository variables (VITE_HAOO_MEASUREMENT_PROVIDER / VITE_HAOO_POSTHOG_TOKEN / VITE_HAOO_POSTHOG_API_HOST) are NOT confirmed created. The deploy workflow reads them; nothing in this repo can observe them. An absent variable fails the selector closed to and the deploy captures nothing while every gate stays green — a green workflow is not evidence of a capturing deploy. Blocks UAT 10 and 8, and therefore MEAS-01/MEAS-08.
 - [Phase 04.2 RESOLVED 2026-09-05] The third-party GitHub Pages takeover of haoo.online is CLEARED. The owner verified both domains in the account-level Pages UI; orchestrator re-measured: _github-pages-challenge-karugudev.haoo.online TXT = "4cc29667cf247705c08667d0f5e10e" and .zero-paperhub.com TXT = "1a1b2ecceedfebd66940e9cb5b17d7" (both non-empty), www.haoo.online now returns 404 ("Site not found - GitHub Pages", the RAJABOM/MEGAWIN spam site is gone), haoo.online returns 301 to that 404, and www.zero-paperhub.com still returns 200. Both domains are verified to the KaruguDev account, so neither can be re-taken. Plan 04.2-01 tasks 1 and 2 are cleared and task 3 is committed. STILL OPEN, unrelated to the takeover: haoo.online has no MX records, so mail to info@haoo.online very likely does not arrive; the owner decided to point MX at mx1/mx2.privateemail.com, but that DNS change is out of this phase scope.
 - [Phase 04.2 RESOLVED 2026-09-06] Both plan 04.2-02 blockers are cleared. (1) KaruguDev/HAOO was changed to PUBLIC by the owner, so Pages publishes on the free plan and the account-plan question is moot. (2) The missing gh workflow scope no longer blocks: pushes go over SSH, and OAuth scopes are not enforced on SSH key auth, so workflow files push fine. Verified: `ssh -T git@github.com` returns "Hi KaruguDev!", ZPH origin is already git@github.com:KaruguDev/ZERO-PAPERHUB.git, and `git ls-remote git@github.com:KaruguDev/HAOO.git` exits 0. CONSTRAINT for plan 04.2-02: the new repository's origin MUST be the SSH URL git@github.com:KaruguDev/HAOO.git, never the HTTPS URL — over HTTPS the gh token (scopes gist, read:org, repo) would be rejected when pushing .github/workflows/deploy.yml. Any `gh api` write to workflow files would fail for the same reason; use git over SSH. [Q3, the asset directory, was RESOLVED 2026-09-05 as brochure/.]
+- npm run test:phase1:red exits 1 in BOTH repositories (pre-existing: it is a RED gate asserting the Phase 1 suites fail, and they pass). Owner decision owed — see 04.2-DEFERRED-ITEMS.md D6.
 
 ### Quick Tasks Completed
 
@@ -246,6 +250,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-05T20:54:58.523Z
-Stopped at: Completed 04.2-01-PLAN.md
+Last session: 2026-09-05T21:31:13.819Z
+Stopped at: Completed 04.2-02-PLAN.md
 Resume file: None

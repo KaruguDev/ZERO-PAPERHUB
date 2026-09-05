@@ -265,7 +265,7 @@ QUAL-04 (amend), SPLT-01, SPLT-02, SPLT-03, SPLT-04
    repository's own suite at the same strength, and any case that cannot survive the move is
    withdrawn with a named successor in the same commit — never silently dropped.
 
-**Plans**: 1/9 plans executed
+**Plans**: 2/9 plans executed
 
 Plans:
 
@@ -280,7 +280,7 @@ wave below therefore holds at most one HAOO-side plan and at most one ZERO-PAPER
 
 **Wave 2** *(tracer — blocked on Wave 1; no expansion plan starts until this is live)*
 
-- [ ] 04.2-02-PLAN.md — Tracer: clone without rewriting, prune the ZERO-PAPER HUB half and narrow every inventory in one commit, then publish the HAOO document on its own domain.
+- [x] 04.2-02-PLAN.md — Tracer: clone without rewriting, prune the ZERO-PAPER HUB half and narrow every inventory in one commit, then publish the HAOO document on its own domain.
 
 **Wave 3** *(04.2-03 in the HAOO checkout, 04.2-06 in the ZERO-PAPER HUB checkout — different repositories, so they run in parallel)*
 
@@ -334,5 +334,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 04.1 → 04.2 → 5
 | 3. Build Privacy-Bounded Engagement Context | 4/4 | In Progress|  |
 | 4. Report and Enrich the HAOO Funnel Truthfully | 13/14 | In Progress|  |
 | 04.1. Migrate Measurement from Plausible to PostHog | 11/11 | In Progress|  |
-| 04.2. Split HAOO into its Own Repository and Domain | 1/9 | In Progress|  |
+| 04.2. Split HAOO into its Own Repository and Domain | 2/9 | In Progress|  |
 | 5. Prove the Deployed Journey | 0/TBD | Not started | - |
