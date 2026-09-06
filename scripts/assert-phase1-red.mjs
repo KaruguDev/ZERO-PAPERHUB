@@ -1,17 +1,28 @@
 import { spawnSync } from 'node:child_process';
 
+/**
+ * NARROWED by plan `04.2-06`: 4 suites -> 1, and 4 markers -> 1.
+ *
+ * `haoo-page.test.tsx` and `haoo-content.test.ts` left this repository with the HAOO
+ * product, and the build marker left `build-output.test.ts` with the physical-HAOO-
+ * document case it named. The counterpart gate in the HAOO repository — narrowed by plan
+ * `04.2-02` to three suites and three markers — carries exactly the three removed pairs,
+ * so the original inventory of four still adds up across the two repositories.
+ *
+ * The entries were removed rather than left in place because this gate rejects
+ * `'No test files found'` as an infrastructure failure: a suite named here but absent
+ * from the tree would fail the gate for a reason that has nothing to do with the RED
+ * contract it exists to assert.
+ *
+ * `forbiddenInfrastructureFailures`, the non-zero-exit requirement and the marker check
+ * below are byte-unchanged, so both halves still reject the same class of false red.
+ */
 const suites = [
   'src/test/products-section.test.tsx',
-  'src/test/haoo-page.test.tsx',
-  'src/test/haoo-content.test.ts',
-  'src/test/build-output.test.ts',
 ];
 
 const expectedMarkers = [
   '[phase1-red:products]',
-  '[phase1-red:page]',
-  '[phase1-red:content]',
-  '[phase1-red:build]',
 ];
 
 const forbiddenInfrastructureFailures = [
@@ -68,4 +79,4 @@ if (missingMarker) {
   process.exit(1);
 }
 
-console.log('Phase 1 RED confirmed: all four suites fail on named behavior contracts.');
+console.log('Phase 1 RED confirmed: the Products contract suite fails on its named behavior contract.');

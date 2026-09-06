@@ -1,58 +1,30 @@
 /// <reference types="vite/client" />
 
 /**
- * Public build-time configuration (D-04).
+ * Public build-time configuration declarations — currently NONE, and that emptiness is
+ * the point rather than an omission.
  *
- * `VITE_HAOO_FORM_ENDPOINT` is statically replaced by Vite and is therefore a literal
- * in the published bundle, readable by anyone. It exists to keep the readable
- * `info@haoo.online` string out of the built assets so scrapers do not harvest it —
- * obfuscation, never secrecy (02-RESEARCH.md Pitfall 6). It is supplied as a GitHub
- * Actions repository *variable*, not a secret, and deployment documentation must keep
- * describing it that way.
+ * Until plan `04.2-06` this file declared four optional browser-prefixed product keys on
+ * `ImportMetaEnv` and one build-time approved-ingestion-host constant. Every reader of
+ * all five left this repository in the same commit as the declarations, which is not
+ * tidiness but a hard requirement: `src/test/build-output.test.ts` asserts the
+ * bidirectional exhaustiveness invariant — every declared public build variable is read
+ * by some production source, and every variable a production source reads is declared —
+ * so a declaration outliving its reader fails the first half.
  *
- * Every key is optional because an undeclared variable is `undefined` and a declared but
- * unset one is `''`. Both — along with every other unsafe value — are rejected by
- * `resolveQualifyEndpoint` in favour of `QUALIFY_ENDPOINT_FALLBACK`, and by
- * `resolveMeasurementProvider` / `resolvePostHogToken` / `resolvePostHogApiHost` in
- * favour of the inert no-op sink, so a build with no configuration at all still ships a
- * working submission destination and no analytics.
+ * This repository now reads no `import.meta.env.VITE_*` key at all and declares none.
+ * The two exhaustiveness cases still run: they prove the scanned subject is non-empty
+ * first and then assert BOTH sides are empty, so the invariant is stated explicitly
+ * rather than holding by accident over nothing.
  *
- * All four are declared here, and the interface is exhaustive on purpose. Vite's own
- * `ImportMetaEnv` carries an `[key: string]: any` index signature, so an undeclared key
- * types as `any`: a renamed or misspelled variable would compile clean, resolve to
- * `undefined`, and fail closed to `'none'` — analytics silently off, with no build-time
- * signal that anything was wrong.
+ * The five removed declarations are enumerated by name in the phase's out-of-band record
+ * (`04.2-DEFERRED-ITEMS.md`) rather than here, because this repository's own suite now
+ * forbids those names appearing anywhere it builds from. Their successors live in the
+ * HAOO repository's copy of this file, which owns the qualification endpoint, the
+ * measurement provider selector, its two provider values and the ingestion-host constant.
+ *
+ * The file's own rule is unchanged and still load-bearing: **no `import` and no `export`
+ * may be added here.** Either would turn this file into a module and silently drop the
+ * global augmentation, so any shape a future declaration needs is written inline rather
+ * than imported.
  */
-interface ImportMetaEnv {
-  readonly VITE_HAOO_FORM_ENDPOINT?: string;
-  readonly VITE_HAOO_MEASUREMENT_PROVIDER?: string;
-  readonly VITE_HAOO_POSTHOG_TOKEN?: string;
-  readonly VITE_HAOO_POSTHOG_API_HOST?: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
-
-/**
- * Build-time approved analytics ingestion hosts (T-04.1-09).
- *
- * The destination events may be sent to, as distinct from the script source above: the
- * PostHog SDK is bundled rather than fetched from an approved origin (D-02), so the
- * ingestion host is the origin that governs what leaves the browser. Statically replaced
- * by Vite from version-controlled repository configuration, gated on the resolved
- * measurement provider, so a build that has not deliberately selected the provider
- * inlines an empty array and carries no ingestion origin at all.
- *
- * Declared optional because it is genuinely absent under the test runner, which uses a
- * separate config with no `define`. The resolver that reads it must therefore fail closed
- * to an empty approved set rather than to a permissive one — an ingestion host the
- * project never approved is precisely the failure this constant exists to prevent.
- *
- * No `import` or `export` may be added to this file: that would turn it into a module and
- * silently drop the global `ImportMetaEnv` augmentation above, so the shape is written
- * inline rather than imported from the configuration module.
- */
-declare const __HAOO_APPROVED_ANALYTICS_HOSTS__:
-  | readonly { readonly origin: string }[]
-  | undefined;

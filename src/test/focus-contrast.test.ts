@@ -30,15 +30,30 @@ export const RING_COLOR_TOKENS: Readonly<Record<string, string>> = {
  * than by widening RING_COLOR_TOKENS, so a focus style that is never measured cannot
  * ship. The contract asserts `pairs.length > 0`, so a file listed here with no focus
  * utility fails loudly.
+ *
+ * NARROWED by plan `04.2-06`: 7 entries -> 1. The six removed, verbatim:
+ *
+ *   'src/pages/ProductPage.tsx'
+ *   'src/components/ProductHeader.tsx'
+ *   'src/components/OnboardingChoices.tsx'
+ *   'src/components/BrochurePanel.tsx'
+ *   'src/components/QualifyForm.tsx'
+ *   'src/components/QualifyFallback.tsx'
+ *
+ * All six are HAOO product sources that left this repository with the product, and all
+ * six are registered in the HAOO repository's own copy of this list (six entries there
+ * after plan `04.2-02` dropped `ProductsSection.tsx` from it). The union of the two
+ * lists is still every interactive source in either repository, which is the invariant —
+ * neither half alone.
+ *
+ * Narrowed per entry. `MIN_FOCUS_CONTRAST`, `DEFAULT_RING_OFFSET`, `RING_COLOR_TOKENS`,
+ * the extractor and the per-file `expect(pairs.length).toBeGreaterThan(0)` vacuity guard
+ * are byte-unchanged, so the one surviving source is still measured exactly as strictly
+ * as the seven were. The list remains CLOSED: a new interactive component is admitted by
+ * registering it here, never by widening the token set.
  */
 export const FOCUS_SOURCES = [
-  'src/pages/ProductPage.tsx',
-  'src/components/ProductHeader.tsx',
-  'src/components/OnboardingChoices.tsx',
-  'src/components/BrochurePanel.tsx',
   'src/components/ProductsSection.tsx',
-  'src/components/QualifyForm.tsx',
-  'src/components/QualifyFallback.tsx',
 ] as const;
 
 /** Tailwind ring *width* keywords — these are not colours and carry no contrast. */
@@ -234,31 +249,25 @@ describe('Phase 1 focus indicator contrast contracts', () => {
     });
   }
 
-  it('styles script-moved focus with modality-independent utilities', () => {
-    // `:focus-visible` is a user-agent heuristic that generally does not fire for a
-    // script-focused non-interactive element on the pointer path, so a `focus-visible:`
-    // ring on those targets is measured here but never painted for the visitor. The
-    // extractor above reads both variants, which is why this contract has to pin the
-    // variant as well as the contrast.
-    const SCRIPT_FOCUS_LITERAL =
-      "'focus:outline-none focus:ring-2 focus:ring-[#4054C6] focus:ring-offset-2'";
-    const scriptFocusTargets = [
-      // The confirmation heading and the error-summary container.
-      ['src/components/QualifyForm.tsx', 2],
-      // The failure heading.
-      ['src/components/QualifyFallback.tsx', 1],
-    ] as const;
-
-    for (const [file, expectedUses] of scriptFocusTargets) {
-      const source = readFileSync(resolve(ROOT, file), 'utf8');
-
-      expect(source, file).toContain(SCRIPT_FOCUS_LITERAL);
-      expect(
-        (source.match(/\$\{scriptFocusClasses\}/g) ?? []).length,
-        `${file}: every tabIndex={-1} focus target must use the modality-independent ring`,
-      ).toBe(expectedUses);
-    }
-  });
+  /**
+   * RETIRED by plan `04.2-06`. Successor: `styles script-moved focus with
+   * modality-independent utilities`, byte-identical, in the HAOO repository's
+   * `src/test/focus-contrast.test.ts`.
+   *
+   * The case pinned the `focus:` (not `focus-visible:`) ring variant on the two
+   * `tabIndex={-1}` targets a script moves focus to — the qualification form's
+   * confirmation heading and error summary, and the fallback's failure heading. All three
+   * targets live in `src/components/QualifyForm.tsx` and `src/components/QualifyFallback.tsx`,
+   * both of which moved to the HAOO repository with the qualification surface.
+   *
+   * It could not be narrowed, only retired: this repository has no element that receives
+   * focus from a script, so there is no remaining subject to pin the variant on. The claim
+   * did not become false — it lost its subject entirely, which is a different thing and is
+   * why it is recorded here and in `04.2-DEFERRED-ITEMS.md` rather than deleted. The
+   * reasoning it encodes (a `focus-visible:` ring on a script-focused non-interactive
+   * element is measured but never painted) remains true and is the reason a future
+   * interactive addition here must register in `FOCUS_SOURCES` above.
+   */
 
   it('rejects the sub-3:1 accent-on-navy pairing and accepts the white-on-navy replacement', () => {
     expect(contrastRatio('#4054c6', '#18275f')).toBeCloseTo(2.21, 2);

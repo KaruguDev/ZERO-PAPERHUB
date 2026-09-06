@@ -1,12 +1,12 @@
 import { ArrowRight } from 'lucide-react';
-import { PRODUCTS_NAV_LABEL, PRODUCTS_SECTION_ID, productRoute } from '../products/registry';
-import type { ProductDefinition } from '../products/types';
+import { PRODUCTS_NAV_LABEL, PRODUCTS_SECTION_ID } from '../products/registry';
+import type { ProductCard as ProductCardRecord } from '../products/registry';
 
 const focusClasses =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2';
 
 interface ProductCardProps {
-  readonly product: ProductDefinition;
+  readonly product: ProductCardRecord;
   readonly featured: boolean;
 }
 
@@ -43,7 +43,7 @@ function ProductCard({ product, featured }: ProductCardProps) {
           {product.audienceLead}
         </p>
         <a
-          href={productRoute(product)}
+          href={product.href}
           className={`mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-blue-700 px-6 py-3 text-sm font-semibold leading-[1.4] text-white transition-colors duration-200 hover:bg-blue-600 ${focusClasses}`}
         >
           Explore {product.name}
@@ -69,7 +69,7 @@ function ProductCard({ product, featured }: ProductCardProps) {
 }
 
 interface ProductsSectionProps {
-  readonly products: readonly ProductDefinition[];
+  readonly products: readonly ProductCardRecord[];
 }
 
 export default function ProductsSection({ products }: ProductsSectionProps) {

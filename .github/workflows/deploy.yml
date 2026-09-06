@@ -43,59 +43,29 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # The Phase 4 capability audit: 69 required capability rows and eleven
-      # operational-boundary assertions. It was an exported function no npm script and no
-      # workflow ever called, so COVERAGE.md could drift arbitrarily without any gate
-      # noticing.
+      # REDUCED by plan `04.2-06`, in the same commit that removed what these lines
+      # described.
       #
-      # Restated by `04.1-11` in the same commit that added the Build variables below.
-      # This comment used to say the audit checks "that production analytics remains
-      # OPT-OUT" — `04.1-11` replaced exactly that assertion, so leaving the sentence here
-      # would have stood a false statement in CI. The audit now asserts that enablement is
-      # opt-in and ENABLED, that the processor approval is recorded and the workflow
-      # supplies the three public build variables, that the capabilities are reached at
-      # runtime, that a green workflow run is NOT evidence of a capturing deploy, and that
-      # the report credentials stay out of every `VITE_*` variable.
-      - name: Verify capability coverage
-        run: npm run verify:coverage
-
-      # The three PostHog values are repository VARIABLES, not secrets, and the distinction
-      # is deliberate rather than an oversight. Vite inlines every `VITE_*` value into the
-      # published JavaScript bundle, so all three are world-readable the moment the site
-      # deploys. The project key is public write-only by design; storing it as a secret
-      # would imply a confidentiality property the artifact cannot have, and would teach the
-      # next reader that `VITE_*` is a place secrets may go. It is not.
+      # Gone with it: the "Verify capability coverage" step, whose argument was a path
+      # inside `.planning/` that moves to the HAOO repository under D-03 — leaving it
+      # would fail this deploy on a missing path — and the four browser-prefixed build
+      # variables together with the four paragraphs justifying them. Those paragraphs
+      # explained why the measurement provider's values were repository variables rather
+      # than secrets, and why two named report credentials were deliberately absent from
+      # this environment. With no variables
+      # left they described machinery that is not here, and a stale justification standing
+      # in CI is a false statement in CI — the exact failure `04.1-11` fixed by restating
+      # a step's comment in the same commit that changed what the step asserts.
       #
-      # `POSTHOG_QUERY_API_KEY` and `POSTHOG_PROJECT_ID` are deliberately absent and must
-      # stay absent. They are local inputs to `npm run report:haoo`; exporting either here
-      # under a browser prefix would inline a credential into that world-readable bundle
-      # before any bundle scan ran. `src/test/build-output.test.ts` reads this file and
-      # asserts their absence, deriving the forbidden names from the credential group the
-      # bundle scan already uses.
-      #
-      # Widened by code-review WR-02, which measured that the sentence above described only
-      # half a gate. Forbidding NAMES cannot stop a credential assigned to a name nobody
-      # thought to forbid, and the same test now also reads what every `VITE_*` variable in
-      # this file is ASSIGNED: each must be exactly one `${{ vars.* }}` expression, never a
-      # secret, a literal, or any other context. That rule is what makes the paragraph
-      # above enforceable rather than merely stated, and it is the reason a value here may
-      # only ever come from a repository variable.
-      #
-      # Enabled by `04.1-11`, after the privacy owner recorded the re-opened processor
-      # approval (04.1-USER-SETUP.md). An unset variable expands to the empty string, the
-      # selector fails closed to `none`, and the build captures nothing — so this step going
-      # green is not evidence that the deploy captures.
+      # This workflow now sets NO browser-prefixed variable at all, and
+      # `src/test/build-output.test.ts` asserts that empty set explicitly rather than
+      # iterating nothing.
       - name: Build
-        env:
-          VITE_HAOO_FORM_ENDPOINT: ${{ vars.VITE_HAOO_FORM_ENDPOINT }}
-          VITE_HAOO_MEASUREMENT_PROVIDER: ${{ vars.VITE_HAOO_MEASUREMENT_PROVIDER }}
-          VITE_HAOO_POSTHOG_TOKEN: ${{ vars.VITE_HAOO_POSTHOG_TOKEN }}
-          VITE_HAOO_POSTHOG_API_HOST: ${{ vars.VITE_HAOO_POSTHOG_API_HOST }}
         run: npm run build
 
-      # `test:unit`, not `test`: `test` re-runs `build` without the endpoint variable and
-      # would overwrite the artifact this job is about to upload. Running after Build is
-      # deliberate — `build-output.test.ts` validates the very `dist/` that ships.
+      # `test:unit`, not `test`: `test` re-runs `build` and would overwrite the artifact
+      # this job is about to upload. Running after Build is deliberate —
+      # `build-output.test.ts` validates the very `dist/` that ships.
       - name: Test
         run: npm run test:unit
 

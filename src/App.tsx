@@ -18,11 +18,9 @@ import {
   ChevronDown,
   Download,
 } from 'lucide-react';
-import ProductPage from './pages/ProductPage';
 import ProductsSection from './components/ProductsSection';
-import { HAOO_PRODUCT } from './products/haoo';
 import { PRODUCTS, productsNavLink } from './products/registry';
-import type { ProductDefinition } from './products/types';
+import type { ProductCard } from './products/registry';
 
 function downloadCompanyProfile() {
   const content = `ZERO-PAPER HUB
@@ -124,7 +122,7 @@ const focusRingClasses =
  * Product discovery is derived from collection presence, so the navigation entry
  * and the Products landmark can never disagree about whether products exist.
  */
-function homeNavLinks(products: readonly ProductDefinition[]) {
+function homeNavLinks(products: readonly ProductCard[]) {
   const productsLink = productsNavLink(products);
   if (!productsLink) {
     return NAV_LINKS;
@@ -169,7 +167,7 @@ const SERVICES = [
 ];
 
 interface HomePageProps {
-  readonly products?: readonly ProductDefinition[];
+  readonly products?: readonly ProductCard[];
 }
 
 export function HomePage({ products = PRODUCTS }: HomePageProps) {
@@ -652,10 +650,15 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
   );
 }
 
+/**
+ * The root component.
+ *
+ * Until plan `04.2-06` this branched on `document.body.dataset.page` to choose between
+ * the home page and the HAOO product page. After the split this repository publishes
+ * exactly one document, so the branch could never take its other arm — a branch with an
+ * unreachable arm is the anti-pattern the refreshed architecture map names, so it was
+ * removed rather than shrunk.
+ */
 export default function App() {
-  if (document.body.dataset.page === 'haoo-product') {
-    return <ProductPage product={HAOO_PRODUCT} />;
-  }
-
   return <HomePage />;
 }

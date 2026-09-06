@@ -22,9 +22,10 @@ dist-ssr
 *.sw?
 
 # Vite loads .env.<mode> by build mode, so every mode file is the natural place a
-# developer drops VITE_HAOO_FORM_ENDPOINT while testing the deploy configuration --
-# and anything that lands beside it. Ignore the whole family, keep the checked-in
-# example.
+# developer drops a browser-prefixed build variable while testing a deploy
+# configuration -- and anything that lands beside it. This repository reads no such
+# variable since plan 04.2-06, but the family stays ignored: the risk it guards against
+# is a file appearing, not a variable being read. Keep the checked-in example.
 .env
 .env.*
 !.env.example
@@ -38,10 +39,17 @@ dist-ssr
 .gsd/
 .planning/research/.cache/
 
-# Generated owner reports carry aggregate HAOO business counts and are produced on
-# demand from the Stats API. They are a local artifact of `npm run report:haoo`, never
-# repository content, and must not reach a published bundle or a code review diff.
+# NARROWED by plan 04.2-06, in the same commit that removed what it named:
+# `dist-approved-host-probe/` was the throwaway output of the provider-selected
+# ingestion-host bundle probe, which was retired here. Its successor runs in the HAOO
+# repository, whose own .gitignore keeps both probe entries. An ignore rule naming a
+# directory nothing in this repository can produce is a comment describing machinery that
+# is not here.
+#
+# `.reports/` STAYS, and its reason changed rather than disappearing. The generator that
+# produced it (`scripts/generate-haoo-report.mjs` and the `report:haoo` npm script) moved
+# to the HAOO repository in the same commit, so nothing here writes this directory any
+# more -- but an existing local checkout still has one, and those files carry aggregate
+# product business counts. They were never repository content and must not reach a
+# published bundle or a review diff just because their producer left.
 .reports/
-
-# Throwaway output of the provider-selected ingestion-host bundle probe (src/test/build-output.test.ts)
-dist-approved-host-probe/

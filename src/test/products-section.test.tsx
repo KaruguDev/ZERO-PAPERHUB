@@ -2,13 +2,31 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { HomePage } from '../App';
 import ProductsSection from '../components/ProductsSection';
-import { HAOO_PRODUCT } from '../products/haoo';
-import { PRODUCTS_NAV_LABEL, PRODUCTS_SECTION_ID } from '../products/registry';
-import type { ProductDefinition } from '../products/types';
+import { PRODUCTS, PRODUCTS_NAV_LABEL, PRODUCTS_SECTION_ID } from '../products/registry';
+import type { ProductCard } from '../products/registry';
 
-function product(overrides: Partial<ProductDefinition>): ProductDefinition {
+/**
+ * RE-POINTED by plan `04.2-06`, not rewritten.
+ *
+ * This suite used to build its fixtures from `HAOO_PRODUCT` in `src/products/haoo.ts`
+ * and type them as `ProductDefinition` from `src/products/types.ts`. Both modules moved
+ * to the HAOO repository and D-06 forbids importing across the split, so the fixtures now
+ * come from the shipped card record itself. Every case below is preserved — a case lost
+ * here is a case lost from the Products contract Phase 1 established.
+ *
+ * Taking the base fixture from `PRODUCTS[0]` rather than restating its fields is
+ * deliberate: the card is the only source of these strings in this repository, so a copy
+ * change that did not reach the section would fail here rather than agreeing with a
+ * second hand-typed copy.
+ */
+const HAOO_CARD = PRODUCTS[0];
+
+/** The HAOO site, as an absolute origin. Pinned: D-06 makes this a build-time literal. */
+const HAOO_SITE_URL = 'https://www.haoo.online/';
+
+function product(overrides: Partial<ProductCard>): ProductCard {
   return {
-    ...HAOO_PRODUCT,
+    ...HAOO_CARD,
     ...overrides,
   };
 }
@@ -21,15 +39,27 @@ describe('Phase 1 Products collection contracts', () => {
     expect(screen.queryByRole('link', { name: 'Products' })).toBeNull();
   });
 
-  it('renders one product as a featured HAOO card with a native route', () => {
-    render(<ProductsSection products={[HAOO_PRODUCT]} />);
+  /**
+   * RENAMED by plan `04.2-06`. Predecessor: `renders one product as a featured HAOO card
+   * with a native route`. The name outlived its subject — the route is no longer native.
+   * Under D-06 the card carries an absolute link to the product's own domain, because
+   * this repository publishes no document for it and the retired same-origin path
+   * deliberately 404s. Everything else the case asserted is unchanged.
+   */
+  it('renders one product as a featured HAOO card linking to the HAOO domain', () => {
+    render(<ProductsSection products={[HAOO_CARD]} />);
 
     const products = screen.getByRole('region', { name: 'Products' });
     expect(within(products).getByRole('heading', { name: 'HAOO' })).toBeTruthy();
     expect(within(products).getByText('Run the business—not the paperwork.')).toBeTruthy();
     expect(within(products).getByText(/landlords and property managers/i)).toBeTruthy();
-    expect(within(products).getByRole('link', { name: 'Explore HAOO' }).getAttribute('href'))
-      .toBe('/products/haoo/');
+
+    const href = within(products).getByRole('link', { name: 'Explore HAOO' })
+      .getAttribute('href');
+    expect(href).toBe(HAOO_SITE_URL);
+    // Absolute and off-site, asserted as such rather than only as a string match: a
+    // root-relative path would resolve against this site, where nothing serves it.
+    expect(new URL(href ?? '').origin).toBe('https://www.haoo.online');
   });
 
   it('renders many products as a semantic collection without changing HAOO', () => {
@@ -37,21 +67,22 @@ describe('Phase 1 Products collection contracts', () => {
       slug: 'future-product',
       name: 'Future product',
       outcome: 'A future product outcome',
+      href: 'https://example.invalid/future-product/',
     });
 
-    render(<ProductsSection products={[HAOO_PRODUCT, secondProduct]} />);
+    render(<ProductsSection products={[HAOO_CARD, secondProduct]} />);
 
     const products = screen.getByRole('region', { name: 'Products' });
     expect(within(products).getAllByRole('article')).toHaveLength(2);
     expect(within(products).getByRole('link', { name: 'Explore HAOO' }).getAttribute('href'))
-      .toBe('/products/haoo/');
+      .toBe(HAOO_SITE_URL);
     expect(within(products).getByRole('heading', { name: 'Future product' })).toBeTruthy();
   });
 
   it('keeps required featured copy and navigation available without preview media', () => {
     const withoutPreview = product({
       brochure: {
-        ...HAOO_PRODUCT.brochure,
+        ...HAOO_CARD.brochure,
         previewImageHref: '',
       },
     });
@@ -65,7 +96,7 @@ describe('Phase 1 Products collection contracts', () => {
 
 describe('Phase 1 featured product card contract', () => {
   it('renders the locked featured card order, supplied preview, and one native action', () => {
-    render(<ProductsSection products={[HAOO_PRODUCT]} />);
+    render(<ProductsSection products={[HAOO_CARD]} />);
 
     const card = screen.getByRole('article');
 
@@ -73,22 +104,26 @@ describe('Phase 1 featured product card contract', () => {
       .map((element) => element.textContent?.trim());
     expect(order).toEqual([
       'Featured product',
-      HAOO_PRODUCT.name,
-      HAOO_PRODUCT.relationship,
-      HAOO_PRODUCT.outcome,
-      HAOO_PRODUCT.audienceLead,
-      `Explore ${HAOO_PRODUCT.name}`,
+      HAOO_CARD.name,
+      HAOO_CARD.relationship,
+      HAOO_CARD.outcome,
+      HAOO_CARD.audienceLead,
+      `Explore ${HAOO_CARD.name}`,
     ]);
 
     expect(within(card).getAllByRole('link')).toHaveLength(1);
     expect(card.querySelectorAll('button')).toHaveLength(0);
     expect(card.getAttribute('onclick')).toBeNull();
 
-    expect(HAOO_PRODUCT.brochure.previewImageHref).toBe('/products/haoo/brochure-preview.png');
+    // The preview is the HAOO site's own copy. Under split contract decision (d) the four
+    // retired assets under `/products/haoo/` are let go and that path 404s, so a
+    // root-relative source here would render a broken image on this site.
+    expect(HAOO_CARD.brochure.previewImageHref)
+      .toBe('https://www.haoo.online/brochure/brochure-preview.png');
     const preview = within(card).getByRole('img', {
       name: 'HAOO property-management brochure preview',
     });
-    expect(preview.getAttribute('src')).toBe(HAOO_PRODUCT.brochure.previewImageHref);
+    expect(preview.getAttribute('src')).toBe(HAOO_CARD.brochure.previewImageHref);
     expect(preview.getAttribute('width')).toBe('1287');
     expect(preview.getAttribute('height')).toBe('909');
   });
@@ -112,7 +147,7 @@ describe('Phase 1 Products discovery navigation contracts', () => {
   }
 
   it('exposes Products between Services and Values in desktop and mobile navigation', () => {
-    render(<HomePage products={[HAOO_PRODUCT]} />);
+    render(<HomePage products={[HAOO_CARD]} />);
 
     const desktopNavigation = screen.getByRole('navigation', { name: 'Primary' });
     const { mobileNavigation } = openMobileMenu();
@@ -130,7 +165,7 @@ describe('Phase 1 Products discovery navigation contracts', () => {
   });
 
   it('places the Products landmark after Services and before Values', () => {
-    render(<HomePage products={[HAOO_PRODUCT]} />);
+    render(<HomePage products={[HAOO_CARD]} />);
 
     const sectionIds = Array.from(document.querySelectorAll('section[id]'))
       .map((section) => section.id);
@@ -151,7 +186,7 @@ describe('Phase 1 Products discovery navigation contracts', () => {
   });
 
   it('lands the Products heading below the fixed home header rather than behind it', () => {
-    render(<HomePage products={[HAOO_PRODUCT]} />);
+    render(<HomePage products={[HAOO_CARD]} />);
 
     const products = document.getElementById(PRODUCTS_SECTION_ID);
     expect(products).not.toBeNull();
@@ -163,7 +198,7 @@ describe('Phase 1 Products discovery navigation contracts', () => {
   });
 
   it('closes the mobile menu after a visitor selects Products', () => {
-    render(<HomePage products={[HAOO_PRODUCT]} />);
+    render(<HomePage products={[HAOO_CARD]} />);
 
     const { toggle, mobileNavigation } = openMobileMenu();
 
