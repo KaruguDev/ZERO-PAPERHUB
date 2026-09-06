@@ -265,7 +265,7 @@ QUAL-04 (amend), SPLT-01, SPLT-02, SPLT-03, SPLT-04
    repository's own suite at the same strength, and any case that cannot survive the move is
    withdrawn with a named successor in the same commit — never silently dropped.
 
-**Plans**: 8/9 plans executed
+**Plans**: 9/9 plans executed
 
 Plans:
 
@@ -302,7 +302,24 @@ wave below therefore holds at most one HAOO-side plan and at most one ZERO-PAPER
 
 **Wave 7** *(both checkouts)*
 
-- [ ] 04.2-09-PLAN.md — Move the three build variables to the HAOO repository, enforce HTTPS, re-take the prior phase's capturing evidence on the final hostname, and set every requirement status truthfully.
+- [x] 04.2-09-PLAN.md — Move the three build variables to the HAOO repository, enforce HTTPS, re-take the prior phase's capturing evidence on the final hostname, and set every requirement status truthfully.
+
+**Post-verification follow-up** *(scheduled, not owed by any plan in this phase)*
+
+- [ ] **Remove the ZERO-PAPER HUB planning directory (D-03, second half).**
+  **Owner:** the repository owner, as a `/gsd-quick` task against `KaruguDev/ZERO-PAPERHUB`.
+  **Trigger:** sign-off of `/gsd-verify-work` for phase 04.2 — not before, because the verifier
+  reads this phase's plans, summaries and deferred-items record out of that very directory.
+  **Command and commit message:** `04.2-DEFERRED-ITEMS.md` → `## D37`, which also records the
+  measured proof that `KaruguDev/HAOO` is a byte-for-byte superset over all 239 planning files
+  (0 mismatches, 2026-09-06T14:23:23Z) — the precondition without which this item is NOT scheduled.
+  **This duplication is not a separation violation and cannot hide one.**
+  `scripts/verify-tree-disjointness.mjs` excludes `.planning/` from the intersection and from both
+  positive halves (`EXCLUDED_PREFIXES = ['.planning/']`, line 49) and states why in its own header:
+  *"SPLT-01 is a claim about what each repository BUILDS AND SHIPS. The planning record is neither
+  built nor shipped... The planning record's single-home rule is a DIFFERENT decision and is
+  verified separately, by plan 04.2-09."* SPLT-01 is closed on `npm run verify:disjoint` exiting 0
+  in both repositories; D-03's single-home rule is closed by this item.
 
 **UI hint**: no
 
