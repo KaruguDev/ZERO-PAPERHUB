@@ -26,6 +26,13 @@ source, dependency and configuration levels. The home page's Products section li
 to the HAOO domain from an inline card record in `src/products/registry.ts` — a
 build-time literal, deliberately not a build-time dependency on the other repository.
 
-The retired `https://www.zero-paperhub.com/products/haoo/` path and the four brochure
-asset URLs beneath it are not retained; they return 404. That was a deliberate choice
-recorded in the phase 04.2 split contract, not an oversight.
+The retired `https://www.zero-paperhub.com/products/haoo/` path serves a recovery
+document — `public/products/haoo/index.html`, copied verbatim into the build — that
+carries a visitor to <https://www.haoo.online/> by an instant meta refresh, names that
+page as canonical, and offers a visible link for anyone the refresh does not carry. It
+carries no script at all. This host emits no per-path redirect and supports no server
+configuration, so the document is a documented last resort rather than a preference.
+
+The four brochure asset URLs beneath that path are **not** retained; they return 404.
+That was a deliberate choice recorded in the phase 04.2 split contract, not an oversight.
+The brochure now lives at <https://www.haoo.online/brochure/>.

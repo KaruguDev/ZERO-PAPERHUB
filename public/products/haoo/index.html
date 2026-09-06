@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="https://www.haoo.online/brochure/haoo-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HAOO has moved to www.haoo.online</title>
+    <meta
+      name="description"
+      content="HAOO is now published at https://www.haoo.online/. This page carries you there."
+    />
+
+    <!--
+      THE REFRESH IS ZERO SECONDS, AND THAT IS THE WHOLE POINT OF THE NUMBER.
+
+      GitHub Pages emits no per-path 3xx and supports no user server configuration, so a
+      real HTTP 301 is not available for this path. Google's redirect guidance reads an
+      INSTANT meta refresh as a permanent move and a DELAYED one as temporary — the
+      opposite of what a site move wants. The widely repeated claim that "meta refresh is
+      a 302 by default" contradicts that guidance and is not carried here.
+
+      A rewrite-engine configuration file, a host redirects file and a static-site-generator
+      front-matter redirect key are all real mechanisms on OTHER hosts and all do nothing on
+      this one. None of the three is used, and 04.2-SPLIT-CONTRACT.md 'The mechanism
+      constraint' records why. This document is a documented last resort, not a preference.
+    -->
+    <meta http-equiv="refresh" content="0; url=https://www.haoo.online/" />
+
+    <!--
+      The canonical is COMPLEMENTARY to the refresh, not a substitute for it: the search
+      guidance treats the two as different jobs, so D-12 ships both. Its href is
+      byte-identical to the refresh target, and src/test/build-output.test.ts asserts the
+      refresh target, this canonical and the visible anchor equal to ONE ANOTHER rather
+      than each to a literal — so a single edited target cannot silently split them.
+    -->
+    <link rel="canonical" href="https://www.haoo.online/" />
+
+    <!--
+      robots: noindex, follow — a judgement call, recorded with its reasoning.
+
+      NOINDEX keeps this recovery document itself out of the index: it carries no product
+      content and would be a thin duplicate competing with the page it points at. FOLLOW
+      keeps the crawler walking its links, so the canonical and the anchor both still
+      carry the consolidation signal to https://www.haoo.online/. The alternative
+      (indexing this page) would publish a content-free page under a retired path; the
+      other alternative (nofollow) would strand the signal on a page nothing may index.
+    -->
+    <meta name="robots" content="noindex, follow" />
+
+    <!--
+      THIS DOCUMENT CARRIES NO SCRIPT, AND THAT IS A RECORDED DECISION RATHER THAN AN
+      OMISSION.
+
+      Plan 04.2-04 task 1 put the orphaned browser record at this origin to the owner as a
+      blocking gate. Option C — having this document clear that record — was offered with
+      its cost stated and was REJECTED (D25): the record is bounded, non-identifying and
+      self-expiring, and widening a document D-12 defines as static is the kind of thing
+      that later gets extended. So the question was asked and answered, the disposition is
+      "accept and record", and this file's script budget is exactly zero. The suite asserts
+      that as an EXACT number, not a maximum, so "just one more line" is a red test.
+
+      No mount point, no form, no measurement and no product content either. This is a
+      static document, not a route.
+    -->
+  </head>
+  <body>
+    <p>
+      HAOO has moved to its own domain.
+      <a href="https://www.haoo.online/">Open HAOO at www.haoo.online</a>.
+    </p>
+    <p>
+      The HAOO brochure is published at
+      <a href="https://www.haoo.online/brochure/HAOO-Marketing-Brochure.pdf">www.haoo.online/brochure/HAOO-Marketing-Brochure.pdf</a>.
+      The brochure, preview, hero and logo files that used to sit beside this page are not
+      retained here and their old URLs return 404 — a deliberate choice recorded in the
+      phase 04.2 split contract, not an oversight.
+    </p>
+    <p>
+      The visible links above are the guarantee. The refresh is the enhancement: if it does
+      not run, or if a visitor has JavaScript and meta refresh disabled entirely, the links
+      still work — the same discipline every no-JavaScript fallback in this project follows.
+    </p>
+  </body>
+</html>
