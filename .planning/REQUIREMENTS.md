@@ -126,7 +126,7 @@ deploy. MEAS-01 and MEAS-08 stay unchecked and `Gaps Found`.*
 
 ### Repository and Domain Separation
 
-- [ ] **SPLT-01**: HAOO builds, tests, and deploys from a repository containing no ZERO-PAPER HUB source, and ZERO-PAPER HUB builds and deploys containing no HAOO source, with neither suite reading a file the other owns
+- [x] **SPLT-01**: HAOO builds, tests, and deploys from a repository that ships no ZERO-PAPER HUB product source, and ZERO-PAPER HUB from one that ships no HAOO product source, with neither suite reading a file the other owns — measured as CONTENT OWNERSHIP, not string occurrence: no tracked path is shared outside the ratified 26-entry scaffold allowlist, no ratified divergent-content collision has converged, no ZERO-PAPER HUB product source carries HAOO product source, and no HAOO source names a home-page symbol
 - [ ] **SPLT-02**: Every published HAOO URL and asset path — canonical, social metadata, brochure PDF and preview, and `noscript` recovery links — resolves on the HAOO production domain, and a visitor arriving at the retired `/products/haoo/` path still reaches the HAOO page
 - [ ] **SPLT-03**: Measurement build variables, the approved ingestion origin, and the report credentials are configured in the HAOO repository only, and a ZERO-PAPER HUB build carries no measurement code, ingestion origin, or credential shape
 - [ ] **SPLT-04**: Visitor-facing relationship, data-controller, and measurement-disclosure statements are true of HAOO as a standalone domain
@@ -210,7 +210,7 @@ they proved before the move.*
 | QUAL-04 | Phase 04.2 | Pending |
 | QUAL-05 | Phase 5 | Pending |
 | QUAL-06 | Phase 1 | Complete |
-| SPLT-01 | Phase 04.2 | Pending |
+| SPLT-01 | Phase 04.2 | Complete |
 | SPLT-02 | Phase 04.2 | Pending |
 | SPLT-03 | Phase 04.2 | Pending |
 | SPLT-04 | Phase 04.2 | Pending |
@@ -231,3 +231,8 @@ deleted — see the requirement.*
 ---
 *Requirements defined: 2026-08-29*
 *Last updated: 2026-09-05 — Phase 04.2 plan 01 amended PROD-02, PROD-05, PROD-06, QUAL-04 and mapped SPLT-01..04*
+*Amended: 2026-09-06 — plan 04.2-08 restated SPLT-01 as content ownership rather than string occurrence, per the
+owner decision recorded in 04.2-SPLIT-CONTRACT.md § Shared scaffold. The predecessor wording was unsatisfiable as
+literally written (both repositories legitimately carry the same toolchain) and self-defeating on its positive half
+(it forbade the guards from naming what they guard against). Marked Complete on a green `npm run verify:disjoint`
+in both repositories, not on prose.*
