@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "test": "npm run build && vitest run",
     "test:unit": "vitest run",
+    "verify:disjoint": "node scripts/verify-tree-disjointness.mjs . ../HAOO",
     "test:phase1:red": "node scripts/assert-phase1-red.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json"
   },
