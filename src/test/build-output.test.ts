@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { basename, join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -236,6 +236,74 @@ const REPORT_CREDENTIAL_BUNDLE_FORBIDDEN = [
   /Authorization/,
   /Bearer\s/,
   /\/api\/projects\/[^/]*\/query/,
+] as const;
+
+/**
+ * The retired product path's recovery document, asserted at its BUILT location.
+ *
+ * Added by plan `04.2-07`. `vite.config.ts` names exactly ONE input and it is not this
+ * path, so verbatim copying of `public/` is the only route by which a file arrives here.
+ * That is precisely why the case reads `dist/` rather than `public/`: a copy that never
+ * happened is invisible at the source and fatal at the artifact.
+ */
+const BUILT_RECOVERY_HTML = resolve(ROOT, 'dist/products/haoo/index.html');
+
+/**
+ * The HAOO page the retired path hands its visitor to.
+ *
+ * Pinned as a literal here because the value is a cross-REPOSITORY fact: it is
+ * `HAOO_HOST` from `.planning/phases/04.2-.../04.2-split-env.sh`, settled in
+ * `04.2-SPLIT-CONTRACT.md` and reversed to the `www` leg on 2026-09-06. Nothing this
+ * repository builds can derive it. The case below still does not trust this constant to
+ * carry the invariant on its own — it compares the document's refresh target, canonical
+ * href and visible anchor TO ONE ANOTHER first, so a single edited target splits them
+ * and goes red even if the literal were wrong.
+ */
+const HAOO_PAGE_URL = 'https://www.haoo.online/';
+
+/**
+ * The vendor analytics chunk's file-name prefix, and the SDK specifier that produces it.
+ *
+ * `vite.config.ts` used to seed a `manualChunks` entry under this name; plan `04.2-06`
+ * removed the seed, the dependency and the twelve packages beneath it. The FILE-NAME
+ * assertion and the MANIFEST assertion are deliberately paired in one case: a build that
+ * dropped the chunk seed while keeping the dependency would emit the SDK inside
+ * `main-*.js` under a name this prefix never matches, and a name-only check would pass it.
+ */
+const VENDOR_ANALYTICS_CHUNK_PREFIX = 'posthog-sdk';
+const ANALYTICS_SDK_SPECIFIER = 'posthog-js';
+
+/**
+ * The provider's ingestion origin — A PINNED LITERAL, AND AN INTENTIONAL EXCEPTION TO THE
+ * DERIVE-DON'T-RESTATE RULE.
+ *
+ * Everywhere else in this suite a forbidden string is derived from the contract that owns
+ * it, so widening the contract without widening the gate is impossible. That is not
+ * available here: the contract module `config/approved-analytics-hosts.ts` LEFT this
+ * repository under SPLT-03 and now lives in `KaruguDev/HAOO`, where its
+ * `APPROVED_ANALYTICS_HOSTS` export is the derivation source for that repository's own
+ * probe case. Importing it back across the split would reintroduce exactly the build-time
+ * coupling this phase removed.
+ *
+ * So it is restated, named as an exception rather than left to read as an oversight, and
+ * bound below to `PROVIDER_INGESTION_HOST_SOURCE_FORBIDDEN` — the one in-repository group
+ * that still carries this origin — so the two cannot drift apart unnoticed.
+ */
+const PINNED_INGESTION_ORIGIN = 'https://us.i.posthog.com';
+
+/**
+ * Every browser-prefixed measurement variable this repository ever declared.
+ *
+ * Restated for the same reason as the origin: `src/vite-env.d.ts` declares none any more
+ * (plan `04.2-06` removed all five declarations with their readers), so there is no
+ * in-repository set left to derive from. The generic `VITE_HAOO_` prefix is asserted
+ * alongside the four names, so a FIFTH name nobody listed here is caught too.
+ */
+const MEASUREMENT_BUILD_VARIABLES = [
+  'VITE_HAOO_MEASUREMENT_PROVIDER',
+  'VITE_HAOO_POSTHOG_TOKEN',
+  'VITE_HAOO_POSTHOG_API_HOST',
+  'VITE_HAOO_FORM_ENDPOINT',
 ] as const;
 
 /**
@@ -746,5 +814,174 @@ describe('Phase 1 static build contracts', () => {
       .filter(({ value }) => SECRETS_CONTEXT.test(value) || !REPOSITORY_VARIABLE_EXPRESSION.test(value));
 
     expect(offending.map(({ name }) => name)).toEqual(['VITE_HAOO_ANALYTICS_KEY']);
+  });
+
+  /**
+   * The retired product path's answer, asserted against the BUILT document.
+   *
+   * ADDED by plan `04.2-07` (D-12, SPLT-02, PROD-02). GitHub Pages emits no per-path 3xx
+   * and supports no user server configuration, so the only honest answer available for
+   * `https://www.zero-paperhub.com/products/haoo/` is a published document that carries a
+   * visitor across by an instant refresh, tells a crawler the HAOO page is canonical, and
+   * offers a visible link when neither of those runs. This case is what makes that a
+   * checked fact rather than a claim.
+   *
+   * It reads `dist/`, not `public/`, DELIBERATELY. Verbatim copying is the mechanism under
+   * test — `vite.config.ts` names one input and it is not this path — so a document that
+   * failed to copy would satisfy every assertion at the source and none of them at the
+   * artifact a visitor actually reaches.
+   */
+  it('publishes a scriptless recovery document at the retired product path', () => {
+    const html = readText(BUILT_RECOVERY_HTML);
+
+    // Subject before claim. `readText` returns '' for a missing path, and a `not.toContain`
+    // over '' passes for the wrong reason — the same vacuity this suite refuses everywhere
+    // else. Deleting the built document must make this case FAIL, and it does.
+    expect(html, 'dist/products/haoo/index.html').not.toBe('');
+    expect(html.length, 'the built recovery document').toBeGreaterThan(0);
+
+    const refreshTarget = html.match(/<meta http-equiv="refresh" content="0; url=([^"]+)"/u)?.[1];
+    const canonicalTarget = html.match(/<link rel="canonical" href="([^"]+)"/u)?.[1];
+    const anchorTargets = [...html.matchAll(/<a href="([^"]+)"/gu)].map(([, href]) => href);
+
+    // INSTANT, not delayed. Google's redirect guidance reads a 0-second refresh as a
+    // permanent move and a delayed one as temporary — the opposite of a site move's
+    // intent. `0; url=` is inside the pattern, so a delayed refresh does not merely change
+    // a number: it stops matching and this assertion goes red on `undefined`.
+    expect(refreshTarget, 'the instant meta refresh target').toBe(HAOO_PAGE_URL);
+
+    // The three targets are compared TO ONE ANOTHER rather than each to a literal, so one
+    // edited target cannot silently split them (T-04.2-32).
+    expect(canonicalTarget, 'the canonical href, against the refresh target').toBe(refreshTarget);
+    expect(
+      anchorTargets.filter((href) => href === refreshTarget),
+      'visible anchors pointing at the refresh target',
+    ).toHaveLength(1);
+
+    // Every other link leaves for the HAOO host too. The brochure moved to
+    // `www.haoo.online/brochure/` under the split contract's published-document path, and
+    // the dead ZPH asset URLs beneath this page must never be linked from it: they 404
+    // permanently under decision (d).
+    expect(anchorTargets.length, 'anchors in the recovery document').toBeGreaterThan(0);
+    for (const href of anchorTargets) {
+      expect(href, `anchor ${href}`).toMatch(/^https:\/\/www\.haoo\.online\//u);
+    }
+
+    // THE EXACT SCRIPT COUNT THE OWNER RECORDED — a number, never a maximum.
+    // Plan `04.2-04` task 1 put the orphaned browser record at this origin to the owner as
+    // a blocking gate and offered Option C: have this document clear it. The owner
+    // REJECTED it (D25) — the record is bounded, non-identifying and self-expiring, and
+    // D-12 defines this document as static. Zero is therefore a decision, not an accident,
+    // and a range would have accepted both dispositions when only one is correct here.
+    // "Just one more line" is a red test.
+    expect([...html.matchAll(/<script\b/gu)], 'script elements in the recovery document')
+      .toHaveLength(0);
+
+    // Not a route: no mount point, no form, no product content.
+    expect(html, 'a mount point in the recovery document').not.toContain('id="root"');
+    expect(html, 'a form in the recovery document').not.toMatch(/<form\b/u);
+
+    // The robots directive, with its reasoning recorded beside it in the document.
+    expect(html, 'the robots directive').toContain('<meta name="robots" content="noindex, follow"');
+
+    /*
+     * D19 CLOSED, in the place plan `04.2-06` suggested for it.
+     *
+     * `README.md` lost its only test gate when the SDK left (`keeps the README delivery
+     * claim in step with whether a production module loads the SDK` retired with its
+     * subject), and the paragraph it left behind went FALSE the moment this document
+     * shipped: it stated that the retired path "returns 404". The claim and the artifact
+     * are bound here so they cannot drift again — if the document is built, no README
+     * paragraph naming the retired path may also say it 404s.
+     */
+    const readme = readText(resolve(ROOT, 'README.md'));
+    expect(readme, 'README.md').not.toBe('');
+    const retiredPathParagraphs = readme.split('\n\n').filter((para) => para.includes('/products/haoo/'));
+    expect(retiredPathParagraphs.length, 'README paragraphs describing the retired path')
+      .toBeGreaterThan(0);
+    for (const [index, para] of retiredPathParagraphs.entries()) {
+      expect(
+        para,
+        `README paragraph ${index + 1} naming the retired path says it returns 404, but `
+        + 'dist/products/haoo/index.html is built and served there. The 404 is true of the '
+        + 'four ASSET URLs beneath the path, not of the path itself.',
+      ).not.toMatch(/products\/haoo\/`? path[\s\S]*?404/u);
+    }
+  });
+
+  /**
+   * The separation claim, made at the ARTIFACT rather than inferred from the sources.
+   *
+   * ADDED by plan `04.2-07` (SPLT-03, SC4). Until now SPLT-03's evidence in this
+   * repository was the absence of the modules, the dependency and the configuration —
+   * three source-level facts from which a measurement-free BUILD is inferred rather than
+   * observed. This case observes it: it reads what the browser actually receives.
+   *
+   * Five labelled subjects, and the first line is more important than any of them: the
+   * bundle is proved NON-EMPTY before a single absence is asserted. That discipline is
+   * reproduced from the provider-unset probe case in `KaruguDev/HAOO`, where a
+   * concatenation of an empty asset set would otherwise satisfy every `not.toContain` by
+   * scanning the empty string — a scan that proves nothing is worse than no scan at all.
+   */
+  it('builds an artifact that carries no measurement code, ingestion origin, or vendor analytics chunk', () => {
+    const assetFiles = listFiles(resolve(DIST, 'assets'));
+    const bundle = builtBundleText();
+
+    // PROVE THE SUBJECT BEFORE ASSERTING ANY ABSENCE. Deleting dist/assets must make this
+    // case FAIL rather than pass, and it does — `builtBundleText()` throws on an empty
+    // asset set and these two guards catch anything it would not.
+    expect(assetFiles.length, 'files under dist/assets to scan').toBeGreaterThan(0);
+    expect(bundle.length, 'the concatenated built bundle text').toBeGreaterThan(0);
+
+    // The pinned literal is bound to the one in-repository group that still carries this
+    // origin, so the restatement above cannot drift away from the source-level gate.
+    expect(
+      PINNED_INGESTION_ORIGIN,
+      'the pinned ingestion origin no longer matches PROVIDER_INGESTION_HOST_SOURCE_FORBIDDEN; '
+      + 'update both together or the source-level and artifact-level gates disagree.',
+    ).toMatch(PROVIDER_INGESTION_HOST_SOURCE_FORBIDDEN[0]);
+
+    // SUBJECT 1 — the vendor analytics chunk, by FILE NAME.
+    for (const file of assetFiles) {
+      expect(
+        basename(file),
+        `dist/assets/${basename(file)} :: ${VENDOR_ANALYTICS_CHUNK_PREFIX}`,
+      ).not.toMatch(new RegExp(`^${VENDOR_ANALYTICS_CHUNK_PREFIX}`, 'u'));
+    }
+
+    // ...paired with the dependency manifests, so removing the source without removing the
+    // dependency cannot pass this case: a build that dropped the chunk seed but kept the
+    // package would emit the SDK inside `main-*.js`, where no name prefix would match it.
+    for (const manifest of ['package.json', 'package-lock.json']) {
+      const text = readText(resolve(ROOT, manifest));
+      expect(text, manifest).not.toBe('');
+      expect(text, `${manifest} :: "${ANALYTICS_SDK_SPECIFIER}"`)
+        .not.toContain(`"${ANALYTICS_SDK_SPECIFIER}"`);
+    }
+
+    // SUBJECT 2 — the ingestion origin.
+    expect(bundle, `built bundle :: ${PINNED_INGESTION_ORIGIN}`)
+      .not.toContain(PINNED_INGESTION_ORIGIN);
+
+    // SUBJECT 3 — that origin's BARE HOSTNAME. Asserted separately because a build could
+    // carry the host without the scheme and satisfy subject 2 while still addressing it.
+    const ingestionHostname = new URL(PINNED_INGESTION_ORIGIN).hostname;
+    expect(bundle, `built bundle :: ${ingestionHostname}`).not.toContain(ingestionHostname);
+
+    // SUBJECT 4 — every browser-prefixed measurement variable name, then the prefix itself
+    // so a fifth name nobody listed is caught too.
+    for (const name of MEASUREMENT_BUILD_VARIABLES) {
+      expect(bundle, `built bundle :: ${name}`).not.toContain(name);
+    }
+    expect(bundle, 'built bundle :: any VITE_HAOO_* name at all')
+      .not.toMatch(/VITE_HAOO_[A-Z0-9_]+/u);
+
+    // SUBJECT 5 — every report credential shape, DERIVED from the group that owns them so
+    // widening that group without widening this scan is impossible.
+    expect(REPORT_CREDENTIAL_BUNDLE_FORBIDDEN.length, 'report credential shapes to scan for')
+      .toBeGreaterThan(0);
+    for (const forbidden of REPORT_CREDENTIAL_BUNDLE_FORBIDDEN) {
+      expect(bundle, `built bundle :: ${String(forbidden)}`).not.toMatch(forbidden);
+    }
   });
 });
