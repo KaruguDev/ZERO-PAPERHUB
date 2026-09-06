@@ -265,7 +265,7 @@ QUAL-04 (amend), SPLT-01, SPLT-02, SPLT-03, SPLT-04
    repository's own suite at the same strength, and any case that cannot survive the move is
    withdrawn with a named successor in the same commit — never silently dropped.
 
-**Plans**: 4/9 plans executed
+**Plans**: 5/9 plans executed
 
 Plans:
 
@@ -289,7 +289,7 @@ wave below therefore holds at most one HAOO-side plan and at most one ZERO-PAPER
 
 **Wave 4** *(04.2-04 in the HAOO checkout, 04.2-07 in the ZERO-PAPER HUB checkout — parallel)*
 
-- [ ] 04.2-04-PLAN.md — Add the approved data-controller statement as a required disclosure member, and rename the storage key with a bumped schema version.
+- [x] 04.2-04-PLAN.md — Add the approved data-controller statement as a required disclosure member, and rename the storage key with a bumped schema version.
 - [ ] 04.2-07-PLAN.md — Publish a scriptless recovery document at the retired path with its retained assets, and prove the reduced artifact carries no measurement.
 
 **Wave 5** *(HAOO checkout, sole occupant — it shares `dist/` and the working tree with 04.2-03 and 04.2-04, so it cannot run beside them)*
@@ -334,5 +334,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 04.1 → 04.2 → 5
 | 3. Build Privacy-Bounded Engagement Context | 4/4 | In Progress|  |
 | 4. Report and Enrich the HAOO Funnel Truthfully | 13/14 | In Progress|  |
 | 04.1. Migrate Measurement from Plausible to PostHog | 11/11 | In Progress|  |
-| 04.2. Split HAOO into its Own Repository and Domain | 4/9 | In Progress|  |
+| 04.2. Split HAOO into its Own Repository and Domain | 5/9 | In Progress|  |
 | 5. Prove the Deployed Journey | 0/TBD | Not started | - |
