@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 current_phase: 04.2
 current_phase_name: Split HAOO into its Own Repository and Domain (INSERTED)
 status: executing
-stopped_at: Completed 04.2-06-PLAN.md
-last_updated: "2026-09-06T07:58:11.122Z"
+stopped_at: HALTED at 04.2-04 task 1 — blocking-human copy approval required before any source change
+last_updated: "2026-09-06T08:11:48.178Z"
 last_activity: 2026-09-05
 last_activity_desc: Phase 04.2 execution started
-state_head: 00a168e291264cf7b0ba49c421421a510d008af9
+state_head: 2ad8ec62ac315bcb284baa6cd6b0b1f7738d9ece
 progress:
   total_phases: 7
   completed_phases: 2
@@ -232,6 +232,7 @@ None yet.
 - [Phase 04.2 RESOLVED 2026-09-05] The third-party GitHub Pages takeover of haoo.online is CLEARED. The owner verified both domains in the account-level Pages UI; orchestrator re-measured: _github-pages-challenge-karugudev.haoo.online TXT = "4cc29667cf247705c08667d0f5e10e" and .zero-paperhub.com TXT = "1a1b2ecceedfebd66940e9cb5b17d7" (both non-empty), www.haoo.online now returns 404 ("Site not found - GitHub Pages", the RAJABOM/MEGAWIN spam site is gone), haoo.online returns 301 to that 404, and www.zero-paperhub.com still returns 200. Both domains are verified to the KaruguDev account, so neither can be re-taken. Plan 04.2-01 tasks 1 and 2 are cleared and task 3 is committed. STILL OPEN, unrelated to the takeover: haoo.online has no MX records, so mail to info@haoo.online very likely does not arrive; the owner decided to point MX at mx1/mx2.privateemail.com, but that DNS change is out of this phase scope.
 - [Phase 04.2 RESOLVED 2026-09-06] Both plan 04.2-02 blockers are cleared. (1) KaruguDev/HAOO was changed to PUBLIC by the owner, so Pages publishes on the free plan and the account-plan question is moot. (2) The missing gh workflow scope no longer blocks: pushes go over SSH, and OAuth scopes are not enforced on SSH key auth, so workflow files push fine. Verified: `ssh -T git@github.com` returns "Hi KaruguDev!", ZPH origin is already git@github.com:KaruguDev/ZERO-PAPERHUB.git, and `git ls-remote git@github.com:KaruguDev/HAOO.git` exits 0. CONSTRAINT for plan 04.2-02: the new repository's origin MUST be the SSH URL git@github.com:KaruguDev/HAOO.git, never the HTTPS URL — over HTTPS the gh token (scopes gist, read:org, repo) would be rejected when pushing .github/workflows/deploy.yml. Any `gh api` write to workflow files would fail for the same reason; use git over SSH. [Q3, the asset directory, was RESOLVED 2026-09-05 as brochure/.]
 - npm run test:phase1:red exits 1 in BOTH repositories (pre-existing: it is a RED gate asserting the Phase 1 suites fail, and they pass). Owner decision owed — see 04.2-DEFERRED-ITEMS.md D6.
+- Phase 04.2 plan 04 is HALTED at its first task — a blocking-human checkpoint:decision on the measurement-disclosure data-controller copy (D-09). No source work is possible: tasks 2 and 3 both carry preconditions on that approval. Owner must return the approved controller heading and note verbatim, the placement, and the orphaned-record disposition. The unresolved Kenya Data Protection Act 2019 sign-off (02-VALIDATION.md:91) feeds into this gate.
 
 ### Quick Tasks Completed
 
@@ -254,6 +255,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-06T07:58:10.983Z
-Stopped at: Completed 04.2-06-PLAN.md
-Resume file: None
+Last session: 2026-09-06T08:11:48.039Z
+Stopped at: HALTED at 04.2-04 task 1 — blocking-human copy approval required before any source change
+Resume file: .planning/phases/04.2-split-haoo-into-its-own-repository-and-domain/04.2-04-PLAN.md
