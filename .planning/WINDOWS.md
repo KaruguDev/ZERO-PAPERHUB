@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 21
+open_count: 22
 waived_count: 0
 fixed_count: 5
-total_count: 26
-last_updated: 2026-09-05T22:04:08.418Z
+total_count: 27
+last_updated: 2026-09-06T08:44:48.476Z
 ---
 
 # Broken Windows Ledger
@@ -41,6 +41,7 @@ last_updated: 2026-09-05T22:04:08.418Z
 | 24 | 04.2 | deviation | .planning/phases/04.2-split-haoo-into-its-own-repository-and-domain/04.2-SPLIT-CONTRACT.md |  | Q3: recorded root-level asset directory 'assets/' collides with Vite's default build.assetsDir; build-output.test.ts scans every file under dist/assets as a build output. Owner must amend or confirm before plan 04.2-02 moves any file. | fixed |  | 2026-09-05T20:53:06.945Z | 2026-09-05T20:59:37.216Z |
 | 25 | 04.2 | deviation | src/test/measurement-page.test.tsx | 258 | Twelve bare /products/haoo/ jsdom paths remain in the HAOO suite; :258's pathname assertion cannot move to the root without becoming jsdom's default (04.2-DEFERRED-ITEMS D7) | open |  | 2026-09-05T22:04:08.271Z |  |
 | 26 | 04.2 | deviation | AGENTS.md | 60 | HAOO repository's AGENTS.md still describes ZERO-PAPER HUB files that no longer exist in its tree (04.2-DEFERRED-ITEMS D8) | open |  | 2026-09-05T22:04:08.418Z |  |
+| 27 | 04.2 | deviation | README.md |  | 04.2-06 left README claiming the retired /products/haoo/ path returns 404; false once 04.2-07 shipped the recovery document. Corrected and gated (D29). | open |  | 2026-09-06T08:44:48.476Z |  |
 
 ````json
 [
@@ -354,6 +355,18 @@ last_updated: 2026-09-05T22:04:08.418Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-09-05T22:04:08.418Z",
+    "resolved_at": null
+  },
+  {
+    "id": 27,
+    "kind": "deviation",
+    "phase": "04.2",
+    "file": "README.md",
+    "line": null,
+    "description": "04.2-06 left README claiming the retired /products/haoo/ path returns 404; false once 04.2-07 shipped the recovery document. Corrected and gated (D29).",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-09-06T08:44:48.476Z",
     "resolved_at": null
   }
 ]
