@@ -207,6 +207,9 @@ Recent decisions affecting current work:
 - [Phase 04.2]: Retired ZPH asset URLs are let go and 404 — nothing copied into the ZPH tree, no retention claimed; D-12's recovery document for the retired page still ships
 - [Phase 04.2]: The form source line keeps the parent-company name and changes only the URL — D-07 preserves the parent relationship, which is true on any domain; only the host had stopped being true
 - [Phase 04.2]: Re-pointing a jsdom origin forces its replaceState pathname to move too, because the campaign normalizer rewrites history state as ${url.pathname}${url.search}${url.hash}
+- [Phase 04.2]: Every owner-report query is bounded at HAOO_DOMAIN_CUTOVER_DAY (2026-09-06) because D-11 keeps both properties in one PostHog project — an unscoped query sums across two properties while the heading names one
+- [Phase 04.2]: ReportModel.cutoverDay is REQUIRED, not optional — a model omitting it would render a plausible document whose numbers disagree with its headings, so omission is a typecheck failure
+- [Phase 04.2]: A withdrawn claim is asserted absent from the RENDERED document, never the source: the withdrawn text is deliberately kept in its withdrawal comment, so a source grep finds it and proves nothing
 - [Phase 04.2]: PROD-06's reuse-across-products half is withdrawn under a named successor rather than deleted; the in-code withdrawal lands in plan 04.2-02
 - [Phase 04.2]: HAOO split by full clone plus one deleting commit — 431 commits preserved, every cited SHA still resolves — D-01/D-02: a filter-repo rewrite would have force-pushed over every clone and broken the SHA citations across .planning/
 - [Phase 04.2]: The four product assets moved to /brochure/ in plan 04.2-02, not 04.2-03 — Owner decision (b) makes the seven path constants, PRODUCT_ASSETS, the alternate link and the noscript href edits; they must land in the same commit as the moved files or the suite is red

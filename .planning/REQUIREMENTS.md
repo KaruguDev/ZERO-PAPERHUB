@@ -194,6 +194,16 @@ Traceability is populated during roadmap creation. Every v1 requirement must map
 | MEAS-06 | Phase 3 | Complete |
 | MEAS-07 | Phase 3 | Complete |
 | MEAS-08 | Phase 4 | Gaps Found |
+
+*Amended 2026-09-06 (plan 04.2-05, the repository and domain split): MEAS-08's intent is
+unchanged — reports still describe browser-observable events as views, attempts and outbound clicks
+rather than confirmed delivery, customers or completed onboarding. What is qualified is an adjacent
+claim. An all-time figure is no longer "every event this project ever recorded"; the measurement
+project now spans two properties, so it is every event recorded **on this domain**, bounded at the
+2026-09-06 cutover, and it does not include earlier events recorded in the same project from the
+previous address. "Truthfully" is thereby anchored to what the numbers now prove rather than to what
+they proved before the move.*
+
 | QUAL-01 | Phase 5 | Pending |
 | QUAL-02 | Phase 5 | Pending |
 | QUAL-03 | Phase 5 | Pending |
