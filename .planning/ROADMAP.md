@@ -265,7 +265,7 @@ QUAL-04 (amend), SPLT-01, SPLT-02, SPLT-03, SPLT-04
    repository's own suite at the same strength, and any case that cannot survive the move is
    withdrawn with a named successor in the same commit — never silently dropped.
 
-**Plans**: 7/9 plans executed
+**Plans**: 8/9 plans executed
 
 Plans:
 
@@ -298,7 +298,7 @@ wave below therefore holds at most one HAOO-side plan and at most one ZERO-PAPER
 
 **Wave 6** *(both checkouts, sole occupant — it asserts a clean tree in each)*
 
-- [ ] 04.2-08-PLAN.md — Write the closed scaffold allowlist and the disjointness auditor, in both repositories, and pin its empty-tree refusal by test.
+- [x] 04.2-08-PLAN.md — Write the closed scaffold allowlist and the disjointness auditor, in both repositories, and pin its empty-tree refusal by test.
 
 **Wave 7** *(both checkouts)*
 
@@ -334,5 +334,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 04.1 → 04.2 → 5
 | 3. Build Privacy-Bounded Engagement Context | 4/4 | In Progress|  |
 | 4. Report and Enrich the HAOO Funnel Truthfully | 13/14 | In Progress|  |
 | 04.1. Migrate Measurement from Plausible to PostHog | 11/11 | In Progress|  |
-| 04.2. Split HAOO into its Own Repository and Domain | 7/9 | In Progress|  |
+| 04.2. Split HAOO into its Own Repository and Domain | 8/9 | In Progress|  |
 | 5. Prove the Deployed Journey | 0/TBD | Not started | - |

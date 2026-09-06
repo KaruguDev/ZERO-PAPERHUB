@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 current_phase: 04.2
 current_phase_name: Split HAOO into its Own Repository and Domain (INSERTED)
 status: executing
-stopped_at: Completed 04.2-07-PLAN.md
-last_updated: "2026-09-06T08:44:28.232Z"
+stopped_at: Completed 04.2-08-PLAN.md
+last_updated: "2026-09-06T13:52:29.838Z"
 last_activity: 2026-09-05
 last_activity_desc: Phase 04.2 execution started
-state_head: e460a77d1b358dff4b08b9bbbd1548f8e5b71470
+state_head: 86157cc8758ae8f27bfd6fa052506c868c1d0997
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 55
-  completed_plans: 50
+  completed_plans: 52
   percent: 29
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-08-29)
 ## Current Position
 
 Phase: 04.2 (Split HAOO into its Own Repository and Domain (INSERTED)) — EXECUTING
-Plan: 6 of 9
+Plan: 7 of 9
 Total Plans in Phase: 9
 Status: Ready to execute
 Last activity: 2026-09-05 — Phase 04.2 execution started
@@ -94,6 +94,7 @@ Progress: 43/46 plans ([███░░░░░░░] 29%)
 | Phase 04.2 P06 | 60 min | 2 tasks | 54 files |
 | Phase 04.2 P04 | 20 min | 3 tasks | 7 files |
 | Phase 04.2 P07 | 12 min | 3 tasks | 6 files |
+| Phase 04.2 P08 | 21 min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -238,6 +239,7 @@ None yet.
 - [Phase 04.2 RESOLVED 2026-09-06] Both plan 04.2-02 blockers are cleared. (1) KaruguDev/HAOO was changed to PUBLIC by the owner, so Pages publishes on the free plan and the account-plan question is moot. (2) The missing gh workflow scope no longer blocks: pushes go over SSH, and OAuth scopes are not enforced on SSH key auth, so workflow files push fine. Verified: `ssh -T git@github.com` returns "Hi KaruguDev!", ZPH origin is already git@github.com:KaruguDev/ZERO-PAPERHUB.git, and `git ls-remote git@github.com:KaruguDev/HAOO.git` exits 0. CONSTRAINT for plan 04.2-02: the new repository's origin MUST be the SSH URL git@github.com:KaruguDev/HAOO.git, never the HTTPS URL — over HTTPS the gh token (scopes gist, read:org, repo) would be rejected when pushing .github/workflows/deploy.yml. Any `gh api` write to workflow files would fail for the same reason; use git over SSH. [Q3, the asset directory, was RESOLVED 2026-09-05 as brochure/.]
 - npm run test:phase1:red exits 1 in BOTH repositories (pre-existing: it is a RED gate asserting the Phase 1 suites fail, and they pass). Owner decision owed — see 04.2-DEFERRED-ITEMS.md D6.
 - Phase 04.2 plan 04 is HALTED at its first task — a blocking-human checkpoint:decision on the measurement-disclosure data-controller copy (D-09). No source work is possible: tasks 2 and 3 both carry preconditions on that approval. Owner must return the approved controller heading and note verbatim, the placement, and the orphaned-record disposition. The unresolved Kenya Data Protection Act 2019 sign-off (02-VALIDATION.md:91) feeds into this gate.
+- SPLT-01 open: verify:disjoint exits 1 in both repositories (18 findings). Owner is a disposition of D31/D32 in 04.2-SPLIT-CONTRACT.md, not more code.
 
 ### Quick Tasks Completed
 
@@ -260,6 +262,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-09-06T08:44:28.094Z
-Stopped at: Completed 04.2-07-PLAN.md
+Last session: 2026-09-06T13:52:29.054Z
+Stopped at: Completed 04.2-08-PLAN.md
 Resume file: None
