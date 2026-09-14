@@ -554,6 +554,32 @@ describe('Phase 1 static build contracts', () => {
     }
   });
 
+  it('publishes crawler directives, a sitemap and structured data for this host only', () => {
+    const robots = readText(resolve(DIST, 'robots.txt'));
+    expect(robots).toContain('User-agent: *');
+    expect(robots).toContain(`Sitemap: ${ROOT_URL}sitemap.xml`);
+
+    const sitemap = readText(resolve(DIST, 'sitemap.xml'));
+    const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc);
+    expect(locations).toEqual([ROOT_URL, `${ROOT_URL}marketing/zero-paper-hub-marketing.pdf`]);
+    for (const location of locations) {
+      expect(existsSync(resolve(DIST, new URL(location).pathname.slice(1) || 'index.html'))).toBe(true);
+    }
+
+    for (const html of [readText(SOURCE_ROOT_HTML), readText(BUILT_ROOT_HTML)]) {
+      expect(html).toContain('<meta name="robots" content="index, follow');
+      const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+      expect(blocks).toHaveLength(1);
+      const graph = (JSON.parse(blocks[0][1]) as { '@graph': { '@type': string; description?: string }[] })['@graph'];
+      expect(graph.map((node) => node['@type'])).toEqual(['WebSite', 'Organization']);
+      expect(graph[1].description).toBe(ROOT_DESCRIPTION);
+
+      const noScript = html.match(/<noscript>([\s\S]*?)<\/noscript>/i)?.[1] ?? '';
+      expect(noScript).toContain('mailto:info@zero-paperhub.com');
+      expect(noScript).not.toMatch(/<script\b|\son[a-z]+\s*=/i);
+    }
+  });
+
   it('uploads exactly the built dist tree that the Pages workflow deploys', () => {
     const workflow = readText(resolve(ROOT, '.github/workflows/deploy.yml'));
 
@@ -1163,7 +1189,7 @@ describe('Phase 04.2 tree disjointness auditor', () => {
       //    repository must carry both, or the convergence check silently ranges over
       //    nothing — the same empty-subject failure the guard case above exists to catch.
       const grounds = parseAllowlistGrounds(readFileSync(resolve(ROOT, 'shared-scaffold.txt'), 'utf8'));
-      expect(grounds.entries.length, 'the ratified allowlist is 26 entries').toBe(26);
+      expect(grounds.entries.length, 'the ratified allowlist is 28 entries').toBe(28);
       expect(grounds.byGround.collision.length, 'Ground B is non-empty').toBeGreaterThan(0);
       expect(
         grounds.byGround.scaffold.length + grounds.byGround.collision.length,
