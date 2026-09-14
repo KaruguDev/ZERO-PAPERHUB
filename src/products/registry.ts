@@ -67,7 +67,7 @@ export const PRODUCTS_NAV_LABEL = 'Products';
 const HAOO_CARD: ProductCard = {
   slug: 'haoo',
   name: 'HAOO',
-  relationship: 'A ZERO-PAPER HUB product',
+  relationship: 'A ZERO-PAPER HUB Product',
   outcome: 'Run the business—not the paperwork.',
   audienceLead:
     'For landlords and property managers who want one clear view of their properties, rent, leases, maintenance, and communication.',

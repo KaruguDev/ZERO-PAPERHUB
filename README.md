@@ -16,7 +16,7 @@ Activation is required only once for this domain and recipient address.
 
 ## HAOO
 
-HAOO is a ZERO-PAPER HUB product and lives in its own repository, published at
+HAOO is a ZERO-PAPER HUB Product and lives in its own repository, published at
 <https://www.haoo.online/>. Its qualification form, its endpoint variable and its
 measurement provider are documented in that repository's README, not here.
 
