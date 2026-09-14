@@ -51,7 +51,7 @@ describe('Phase 1 Products collection contracts', () => {
 
     const products = screen.getByRole('region', { name: 'Products' });
     expect(within(products).getByRole('heading', { name: 'HAOO' })).toBeTruthy();
-    expect(within(products).getByText('Run the business—not the paperwork.')).toBeTruthy();
+    expect(within(products).getByText('Run the business, not the paperwork.')).toBeTruthy();
     expect(within(products).getByText(/landlords and property managers/i)).toBeTruthy();
 
     const href = within(products).getByRole('link', { name: 'Explore HAOO' })
