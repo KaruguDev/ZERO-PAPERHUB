@@ -53,3 +53,8 @@ dist-ssr
 # product business counts. They were never repository content and must not reach a
 # published bundle or a review diff just because their producer left.
 .reports/
+
+# Coverage output from `vitest run --coverage`, consumed by the SonarQube scanner via
+# sonar.javascript.lcov.reportPaths. Regenerated per run and never repository content.
+coverage/
+.scannerwork/
