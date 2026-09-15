@@ -13,7 +13,7 @@
     "verify:disjoint": "node scripts/verify-tree-disjointness.mjs . ../HAOO",
     "test:phase1:contracts": "node scripts/assert-phase1-contracts.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
-    "coverage": "vitest run --coverage --coverage.provider=v8 --coverage.reporter=lcovonly --coverage.reporter=text-summary --coverage.reportsDirectory=coverage --coverage.include=src/** --coverage.all"
+    "coverage": "vitest run --coverage --coverage.provider=v8 --coverage.reporter=lcovonly --coverage.reporter=text-summary --coverage.reportsDirectory=coverage --coverage.include=src/** --coverage.include=scripts/** --coverage.all"
   },
   "engines": {
     "node": ">=22.18.0"
