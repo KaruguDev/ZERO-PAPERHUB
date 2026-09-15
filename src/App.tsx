@@ -85,7 +85,7 @@ Website: www.zero-paperhub.com
   a.download = 'Zero-Paper-Hub-Company-Profile.txt';
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
+  a.remove();
   URL.revokeObjectURL(url);
 }
 
@@ -204,12 +204,12 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
   const contactSection = useInView();
 
   return (
-    <div className="font-sans text-gray-800 bg-white overflow-x-hidden">
+    <div id="top" className="font-sans text-gray-800 bg-white overflow-x-hidden">
 
       {/* NAV */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2.5 md:py-3' : 'bg-transparent py-3 md:py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
-          <a href="#" className="flex min-w-0 items-center group" aria-label="ZERO-PAPER HUB home">
+          <a href="#top" className="flex min-w-0 items-center group" aria-label="ZERO-PAPER HUB home">
             <img src="/zero-paper_hub_hi-def.png" alt="ZERO-PAPER HUB"
               className={`h-14 sm:h-16 md:h-20 max-w-full w-auto rounded-lg object-contain transition-all duration-300 ${scrolled ? 'bg-white/95 p-1 sm:p-1.5 shadow-sm' : 'bg-white/95 p-1 sm:p-1.5'}`} />
           </a>
@@ -486,7 +486,7 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
               className="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-bold text-base shadow-lg shadow-green-200 hover:shadow-xl hover:scale-105 transition-all duration-200">
               Get in Touch <ArrowRight size={17} />
             </a>
-            <button onClick={downloadCompanyProfile}
+            <button type="button" onClick={downloadCompanyProfile}
               className="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-white text-green-800 font-bold text-base shadow-lg shadow-gray-200 border-2 border-green-200 hover:shadow-xl hover:scale-105 hover:bg-green-50 transition-all duration-200">
               <Download size={17} /> Download Profile
             </button>
@@ -571,16 +571,13 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
               </div>
 
               {contactSubmitted && (
-                <div
-                  role="status"
-                  className="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
-                >
+                <output className="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
                   <CheckCircle2 size={19} className="mt-0.5 flex-shrink-0" />
                   <div>
                     <div className="font-bold">Message sent successfully</div>
                     <p className="mt-0.5 text-green-700">Thank you. Our team will get back to you shortly.</p>
                   </div>
-                </div>
+                </output>
               )}
 
               <div className="grid grid-cols-2 gap-4">
@@ -627,7 +624,7 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
       <footer className="bg-green-950 text-white py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <a href="#" className="flex items-center">
+            <a href="#top" className="flex items-center">
               <img src="/zero-paper_hub_hi-def.png" alt="ZERO-PAPER HUB"
                 className="h-16 w-auto rounded-lg object-contain bg-white/95 p-1.5" />
             </a>

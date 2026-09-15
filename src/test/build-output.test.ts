@@ -1179,6 +1179,233 @@ describe('Phase 04.2 tree disjointness auditor', () => {
    *      converge, the path allowlist is blind to it and a real violation walks through,
    *      so convergence is asserted rather than trusted.
    */
+  /**
+   * ADDED after the gap it closes was found the hard way.
+   *
+   * `shared-scaffold.txt` ratifies two paths as MUST-be-byte-identical across both
+   * repositories, the auditor itself among them, "so neither repository can drift into a
+   * private definition of separation". The auditor asserted the OPPOSITE property for its
+   * five Ground B collisions and asserted nothing at all about Ground A — so a change
+   * applied to the auditor in one repository only passed every check, silently, which is
+   * exactly what the ratification exists to prevent. This case covers the assertion that
+   * now closes it, and the PATH lookup added alongside it.
+   */
+  it('verify-tree-disjointness asserts Ground A byte-identity and resolves executables', async () => {
+    const { BYTE_IDENTICAL_PATHS, auditByteIdentity, divergedIdenticalsIn, parseAllowlist, resolveExecutable } =
+      await loadAuditor();
+    const fixtureRoot = mkdtempSync(join(tmpdir(), 'tree-identity-'));
+
+    try {
+      // 1. THE IDENTITY LIST AGREES WITH THE RATIFIED ALLOWLIST. The set lives in the
+      //    auditor rather than in a third `# @ground:`, so this is the check that keeps
+      //    the two sources from drifting apart — without it, the auditor could assert
+      //    byte-identity for a path nobody ratified.
+      const allowlist = parseAllowlist(readFileSync(resolve(ROOT, 'shared-scaffold.txt'), 'utf8'));
+      expect(BYTE_IDENTICAL_PATHS.length, 'the identity list is non-empty').toBeGreaterThan(0);
+      for (const path of BYTE_IDENTICAL_PATHS) {
+        expect(allowlist, `${path} is a ratified allowlist entry`).toContain(path);
+      }
+      expect(
+        BYTE_IDENTICAL_PATHS,
+        'the auditor itself is the entry the ratification names',
+      ).toContain('scripts/verify-tree-disjointness.mjs');
+
+      // 2. AN UNRATIFIED ENTRY IS A FINDING, and is reported even when nothing diverged.
+      const unratified = auditByteIdentity({
+        byteIdenticalPaths: ['scripts/verify-tree-disjointness.mjs', 'src/not-ratified.ts'],
+        allowlist,
+        divergedIdenticals: [],
+        missingIdenticals: [],
+      });
+      expect(unratified.errors.join('\n')).toMatch(/src\/not-ratified\.ts/u);
+      expect(unratified.errors.join('\n')).toMatch(/NOT an entry in the shared-scaffold allowlist/u);
+
+      // 3. BYTE COMPARISON OVER REAL FILES. Same bytes agree; one byte apart does not;
+      //    a path missing from one side is a DIFFERENT finding from divergence.
+      const left = join(fixtureRoot, 'left');
+      const right = join(fixtureRoot, 'right');
+      mkdirSync(left, { recursive: true });
+      mkdirSync(right, { recursive: true });
+      writeFileSync(join(left, 'same.txt'), 'identical bytes\n', 'utf8');
+      writeFileSync(join(right, 'same.txt'), 'identical bytes\n', 'utf8');
+      writeFileSync(join(left, 'drifted.txt'), 'one side changed\n', 'utf8');
+      writeFileSync(join(right, 'drifted.txt'), 'the other did not\n', 'utf8');
+      writeFileSync(join(left, 'only-left.txt'), 'present here alone\n', 'utf8');
+
+      const compared = divergedIdenticalsIn(
+        left,
+        ['same.txt', 'drifted.txt', 'only-left.txt'],
+        right,
+        ['same.txt', 'drifted.txt'],
+        ['same.txt', 'drifted.txt', 'only-left.txt'],
+      );
+      expect(compared.diverged, 'only the file whose bytes differ is diverged').toEqual(['drifted.txt']);
+      expect(compared.missing, 'a one-sided file is missing, not diverged').toEqual(['only-left.txt']);
+
+      const reported = auditByteIdentity({
+        byteIdenticalPaths: BYTE_IDENTICAL_PATHS,
+        allowlist,
+        divergedIdenticals: compared.diverged,
+        missingIdenticals: compared.missing,
+      });
+      expect(reported.errors.join('\n')).toMatch(/DIVERGED: drifted\.txt/u);
+      expect(reported.errors.join('\n')).toMatch(/MISSING: only-left\.txt/u);
+      expect(reported.counts.diverged, 'both kinds count toward the reported figure').toBe(2);
+
+      const agreed = auditByteIdentity({
+        byteIdenticalPaths: BYTE_IDENTICAL_PATHS,
+        allowlist,
+        divergedIdenticals: [],
+        missingIdenticals: [],
+      });
+      expect(agreed.errors, 'two agreeing trees produce no finding').toEqual([]);
+      expect(agreed.counts.byteIdenticalEntries).toBe(BYTE_IDENTICAL_PATHS.length);
+
+      // 4. THE PATH LOOKUP that replaced spawning a bare binary name. An absolute path is
+      //    returned for a name that is on the given PATH, null for one that is not, and
+      //    empty segments -- which a trailing or doubled `:` produces -- are skipped
+      //    rather than resolving against the process working directory.
+      const binDir = join(fixtureRoot, 'bin');
+      mkdirSync(binDir, { recursive: true });
+      const toolPath = join(binDir, 'fixture-tool');
+      writeFileSync(toolPath, '#!/bin/sh\nexit 0\n', { encoding: 'utf8', mode: 0o755 });
+
+      expect(resolveExecutable('fixture-tool', `${binDir}`), 'found on PATH').toBe(toolPath);
+      expect(
+        resolveExecutable('fixture-tool', `::${binDir}:`),
+        'empty PATH segments are skipped, not resolved against the cwd',
+      ).toBe(toolPath);
+      expect(resolveExecutable('no-such-tool-here', binDir), 'absent from PATH').toBeNull();
+      expect(resolveExecutable('fixture-tool', ''), 'an empty PATH finds nothing').toBeNull();
+    } finally {
+      rmSync(fixtureRoot, { recursive: true, force: true });
+    }
+  });
+
+  /**
+   * The auditor's READING half, and the composition that turns its four sub-audits into a
+   * single verdict. The cases above probe the decision functions with literal inputs; this
+   * one gives the file-reading functions real files, because what they are for is surviving
+   * a tree that is not shaped the way the happy path assumes — an unreadable path, a binary
+   * file, a directory that is not a repository at all.
+   *
+   * The composition case matters for a reason the counts do not show: `auditTreeDisjointness`
+   * reports EVERY finding in one throw. A composer that threw on the first would turn a
+   * broken split into a queue of one-at-a-time repairs, which is the behaviour the file's
+   * own header rules out.
+   */
+  it('verify-tree-disjointness reads real trees and reports every finding in one throw', async () => {
+    const {
+      NAMED_PRODUCT_CARRIERS,
+      auditTreeDisjointness,
+      carriersNamingProductIn,
+      convergedCollisionsIn,
+      identifyCheckout,
+      productSourceLeaksIn,
+      readTextFile,
+      trackedFiles,
+    } = await loadAuditor();
+    const fixtureRoot = mkdtempSync(join(tmpdir(), 'tree-reads-'));
+
+    try {
+      const zph = join(fixtureRoot, 'zph');
+      const haoo = join(fixtureRoot, 'haoo');
+      mkdirSync(join(zph, 'public/products/haoo'), { recursive: true });
+      mkdirSync(join(zph, 'src/products'), { recursive: true });
+      mkdirSync(join(haoo, 'src'), { recursive: true });
+
+      // 1. READING. Text comes back as text; anything unreadable or undecodable comes back
+      //    as null rather than throwing, because a single unreadable file must not be able
+      //    to take down an audit of the whole tree.
+      writeFileSync(join(zph, 'CNAME'), 'www.zero-paperhub.com\n', 'utf8');
+      writeFileSync(join(haoo, 'CNAME'), 'www.haoo.online\n', 'utf8');
+      expect(readTextFile(zph, 'CNAME')).toMatch(/zero-paperhub\.com/u);
+      expect(readTextFile(zph, 'does/not/exist.txt'), 'an absent path reads as null').toBeNull();
+
+      writeFileSync(join(zph, 'logo.bin'), Buffer.from([0x89, 0x50, 0x00, 0x01]));
+      expect(readTextFile(zph, 'logo.bin'), 'a file holding a NUL byte is not text').toBeNull();
+
+      // 2. IDENTIFYING BY CNAME, not by argument order — including the case where neither
+      //    side can be named, which is what catches the same checkout being passed twice.
+      expect(identifyCheckout(zph).side).toBe('zph');
+      expect(identifyCheckout(haoo).side).toBe('haoo');
+      expect(
+        identifyCheckout(fixtureRoot),
+        'a directory with no CNAME identifies as neither side',
+      ).toEqual({ side: null, host: '' });
+
+      // 3. A DIRECTORY THAT IS NOT A REPOSITORY names its failure. Returning an empty list
+      //    with no error would be indistinguishable from a repository that tracks nothing,
+      //    and the non-empty guard would then refuse for the wrong stated reason.
+      const notARepo = trackedFiles(join(fixtureRoot, 'not-a-repository'));
+      expect(notARepo.files).toEqual([]);
+      expect(notARepo.error, 'the failure is named rather than silently empty').toBeTruthy();
+
+      // 4. THE POSITIVE HALVES' SUBJECTS, read from disk. A product-source file naming a
+      //    HAOO symbol is a leak; a file that names nothing is not; and the two named
+      //    carriers are expected to go on naming the product.
+      writeFileSync(join(zph, 'src/products/leak.ts'), 'export const x = HAOO_PRODUCT;\n', 'utf8');
+      writeFileSync(join(zph, 'src/products/clean.ts'), 'export const y = 1;\n', 'utf8');
+      writeFileSync(join(zph, 'src/products/registry.ts'), 'export const cards = ["HAOO"];\n', 'utf8');
+      writeFileSync(join(zph, 'public/products/haoo/index.html'), '<p>HAOO moved</p>\n', 'utf8');
+
+      expect(
+        productSourceLeaksIn(zph, ['src/products/leak.ts', 'src/products/clean.ts']),
+        'only the product-source file naming a HAOO symbol leaks',
+      ).toEqual(['src/products/leak.ts']);
+      expect(carriersNamingProductIn(zph, NAMED_PRODUCT_CARRIERS)).toEqual(NAMED_PRODUCT_CARRIERS);
+
+      // 5. GROUND B CONVERGENCE over real bytes, and the skip for a one-sided path.
+      writeFileSync(join(zph, 'src/App.tsx'), 'the same bytes\n', 'utf8');
+      writeFileSync(join(haoo, 'src/App.tsx'), 'the same bytes\n', 'utf8');
+      expect(
+        convergedCollisionsIn(zph, ['src/App.tsx'], haoo, ['src/App.tsx'], ['src/App.tsx']),
+        'two identical Ground B copies have converged',
+      ).toEqual(['src/App.tsx']);
+      expect(
+        convergedCollisionsIn(zph, ['src/App.tsx'], haoo, [], ['src/App.tsx']),
+        'a path missing from one side cannot have converged',
+      ).toEqual([]);
+
+      // 6. THE COMPOSITION. A clean input returns counts and throws nothing.
+      const clean = {
+        leftLabel: 'left tree',
+        leftFiles: ['package.json'],
+        rightLabel: 'right tree',
+        rightFiles: ['package.json'],
+        allowlist: ['package.json'],
+        collisionEntries: [],
+        identicalPaths: [],
+        byteIdenticalPaths: [],
+        divergedIdenticals: [],
+        missingIdenticals: [],
+        productSourceLeaks: [],
+        carriersNamingProduct: NAMED_PRODUCT_CARRIERS,
+        homePageSymbolFiles: [],
+      };
+      expect(auditTreeDisjointness(clean).counts.violations).toBe(0);
+
+      // 7. EVERY FINDING IN ONE THROW — two findings from two different sub-audits, both
+      //    named in a single message, with the count stated.
+      let thrown: Error | null = null;
+      try {
+        auditTreeDisjointness({
+          ...clean,
+          productSourceLeaks: ['src/products/leak.ts'],
+          homePageSymbolFiles: ['src/App.tsx'],
+        });
+      } catch (error) {
+        thrown = error as Error;
+      }
+      expect(thrown, 'a tree with findings must throw').not.toBeNull();
+      expect(thrown?.message).toMatch(/2 findings/u);
+      expect(thrown?.message, 'the leak is named').toMatch(/src\/products\/leak\.ts/u);
+      expect(thrown?.message, 'the home-page symbol hit is named').toMatch(/names a home-page symbol/u);
+    } finally {
+      rmSync(fixtureRoot, { recursive: true, force: true });
+    }
+  });
+
   it('verify-tree-disjointness narrows its subject to product source and reports a converged collision', async () => {
     const { auditPositiveHalves, auditCollisionDivergence, isProductSource, parseAllowlistGrounds, stripComments } =
       await loadAuditor();
@@ -1189,7 +1416,7 @@ describe('Phase 04.2 tree disjointness auditor', () => {
       //    repository must carry both, or the convergence check silently ranges over
       //    nothing — the same empty-subject failure the guard case above exists to catch.
       const grounds = parseAllowlistGrounds(readFileSync(resolve(ROOT, 'shared-scaffold.txt'), 'utf8'));
-      expect(grounds.entries.length, 'the ratified allowlist is 28 entries').toBe(28);
+      expect(grounds.entries.length, 'the ratified allowlist is 29 entries').toBe(29);
       expect(grounds.byGround.collision.length, 'Ground B is non-empty').toBeGreaterThan(0);
       expect(
         grounds.byGround.scaffold.length + grounds.byGround.collision.length,
