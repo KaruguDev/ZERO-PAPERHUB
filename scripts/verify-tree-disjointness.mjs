@@ -144,7 +144,8 @@ export function parseAllowlistGrounds(text) {
     }
     if (line.length === 0 || line.startsWith('#')) continue;
     entries.push(line);
-    (byGround[ground] ??= []).push(line);
+    byGround[ground] ??= [];
+    byGround[ground].push(line);
   }
 
   return { entries, byGround };
@@ -176,7 +177,7 @@ export function stripComments(text) {
   return text
     .replace(/<!--[\s\S]*?-->/gu, ' ')
     .replace(/\/\*[\s\S]*?\*\//gu, ' ')
-    .replace(/(^|[^:])\/\/.*$/gmu, '$1');
+    .replace(/(^|[^:])\/\/[^\n]*/gu, '$1');
 }
 
 /**
@@ -420,7 +421,7 @@ export function identifyCheckout(checkout) {
 
 /** The ZERO-PAPER HUB positive half's subject: PRODUCT SOURCE that ships HAOO source. */
 export function productSourceLeaksIn(checkout, files) {
-  const symbols = new RegExp(`\\b(${HAOO_PRODUCT_SYMBOLS.join('|')})\\b`, 'u');
+  const symbols = new RegExp(String.raw`\b(${HAOO_PRODUCT_SYMBOLS.join('|')})\b`, 'u');
   return files.filter((path) => {
     if (!isProductSource(path)) return false;
     const body = stripComments(readTextFile(checkout, path) ?? '');
@@ -449,7 +450,7 @@ export function convergedCollisionsIn(leftCheckout, leftFiles, rightCheckout, ri
 
 /** The HAOO positive half's subject: sources naming a home-page symbol. */
 export function homePageSymbolFilesIn(checkout, files) {
-  const pattern = new RegExp(`\\b(${HOME_PAGE_SYMBOLS.join('|')})\\b`, 'u');
+  const pattern = new RegExp(String.raw`\b(${HOME_PAGE_SYMBOLS.join('|')})\b`, 'u');
   return files
     .filter((path) => !isExcluded(path) && path.startsWith('src/'))
     .filter((path) => pattern.test(readTextFile(checkout, path) ?? ''));

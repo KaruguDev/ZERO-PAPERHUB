@@ -91,7 +91,8 @@ export function phase1ContractFailure({ status, signal = null, error, output }) 
   }
 
   if (status !== 0) {
-    return `Phase 1 contract gate failed: the contract suites exited ${status ?? `on signal ${signal}`}.`;
+    const exitDescription = status ?? `on signal ${signal}`;
+    return `Phase 1 contract gate failed: the contract suites exited ${exitDescription}.`;
   }
 
   const greenCaseLines = output
