@@ -19,8 +19,14 @@ import {
   Download,
 } from 'lucide-react';
 import ProductsSection from './components/ProductsSection';
+import logo160 from './assets/zero-paper_hub_logo-160.webp';
+import logo320 from './assets/zero-paper_hub_logo-320.webp';
+import logo480 from './assets/zero-paper_hub_logo.webp';
 import { PRODUCTS, productsNavLink } from './products/registry';
 import type { ProductCard } from './products/registry';
+
+// Hashed by Vite so the CDN can cache them for a year; the browser picks the width it needs.
+const LOGO_SRCSET = `${logo160} 160w, ${logo320} 320w, ${logo480} 480w`;
 
 function downloadCompanyProfile() {
   const content = `ZERO-PAPER HUB
@@ -210,8 +216,8 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2.5 md:py-3' : 'bg-transparent py-3 md:py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
           <a href="#top" className="flex min-w-0 items-center group" aria-label="ZERO-PAPER HUB home">
-            <img src="/zero-paper_hub_logo.webp" alt="ZERO-PAPER HUB"
-              srcSet="/zero-paper_hub_logo-160.webp 160w, /zero-paper_hub_logo-320.webp 320w, /zero-paper_hub_logo.webp 480w"
+            <img src={logo480} alt="ZERO-PAPER HUB"
+              srcSet={LOGO_SRCSET}
               sizes="(min-width: 768px) 160px, (min-width: 640px) 128px, 112px"
               width={480} height={240} decoding="async"
               className={`h-14 sm:h-16 md:h-20 max-w-full w-auto rounded-lg object-contain transition-all duration-300 ${scrolled ? 'bg-white/95 p-1 sm:p-1.5 shadow-sm' : 'bg-white/95 p-1 sm:p-1.5'}`} />
@@ -628,8 +634,8 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <a href="#top" className="flex items-center">
-              <img src="/zero-paper_hub_logo.webp" alt="ZERO-PAPER HUB"
-                srcSet="/zero-paper_hub_logo-160.webp 160w, /zero-paper_hub_logo-320.webp 320w, /zero-paper_hub_logo.webp 480w"
+              <img src={logo480} alt="ZERO-PAPER HUB"
+                srcSet={LOGO_SRCSET}
                 sizes="128px"
                 width={480} height={240} loading="lazy" decoding="async"
                 className="h-16 w-auto rounded-lg object-contain bg-white/95 p-1.5" />
