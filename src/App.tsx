@@ -276,9 +276,9 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-green-800 to-blue-900" />
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-        {/* decorative circles */}
-        <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-green-600/20 blur-3xl" />
-        <div className="absolute -bottom-40 -left-20 w-[500px] h-[500px] rounded-full bg-blue-600/20 blur-3xl" />
+        {/* decorative glows — radial gradients rather than blur filters, which are costly to paint on phones */}
+        <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(22,163,74,0.2)_0%,rgba(22,163,74,0.12)_45%,transparent_70%)]" />
+        <div className="absolute -bottom-40 -left-20 w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.2)_0%,rgba(37,99,235,0.12)_45%,transparent_70%)]" />
 
         <div className="relative z-10 max-w-4xl mx-auto px-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs font-semibold tracking-widest uppercase mb-8 backdrop-blur-sm">
@@ -305,7 +305,7 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
         </div>
 
         {/* scroll cue */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 motion-safe:animate-bounce">
           <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center pt-2">
             <div className="w-1 h-2.5 rounded-full bg-white/50" />
           </div>
