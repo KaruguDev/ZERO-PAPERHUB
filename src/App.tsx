@@ -211,6 +211,8 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
           <a href="#top" className="flex min-w-0 items-center group" aria-label="ZERO-PAPER HUB home">
             <img src="/zero-paper_hub_logo.webp" alt="ZERO-PAPER HUB"
+              srcSet="/zero-paper_hub_logo-160.webp 160w, /zero-paper_hub_logo-320.webp 320w, /zero-paper_hub_logo.webp 480w"
+              sizes="(min-width: 768px) 160px, (min-width: 640px) 128px, 112px"
               width={480} height={240} decoding="async"
               className={`h-14 sm:h-16 md:h-20 max-w-full w-auto rounded-lg object-contain transition-all duration-300 ${scrolled ? 'bg-white/95 p-1 sm:p-1.5 shadow-sm' : 'bg-white/95 p-1 sm:p-1.5'}`} />
           </a>
@@ -223,7 +225,7 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
               </a>
             ))}
             <a href="#contact"
-              className={`ml-2 inline-flex min-h-11 items-center rounded-full bg-green-600 px-5 text-white text-sm font-semibold shadow hover:bg-green-500 transition-colors duration-200 ${focusRingClasses}`}>
+              className={`ml-2 inline-flex min-h-11 items-center rounded-full bg-green-700 px-5 text-white text-sm font-semibold shadow hover:bg-green-800 transition-colors duration-200 ${focusRingClasses}`}>
               Get Started
             </a>
           </nav>
@@ -255,7 +257,7 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
               </a>
             ))}
             <a href="#contact" onClick={() => setMenuOpen(false)}
-              className={`inline-flex min-h-11 items-center justify-center rounded-full bg-green-600 px-5 text-white text-sm font-semibold ${focusRingClasses}`}>
+              className={`inline-flex min-h-11 items-center justify-center rounded-full bg-green-700 px-5 text-white text-sm font-semibold hover:bg-green-800 ${focusRingClasses}`}>
               Get Started
             </a>
           </div>
@@ -286,7 +288,7 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#services"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-green-500 hover:bg-green-400 text-white font-bold text-base shadow-lg shadow-green-900/40 transition-all duration-200 hover:scale-105">
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-green-700 hover:bg-green-800 text-white font-bold text-base shadow-lg shadow-green-900/40 transition-all duration-200 hover:scale-105">
               Explore Our Services <ArrowRight size={17} />
             </a>
             <a href="#about"
@@ -627,6 +629,8 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <a href="#top" className="flex items-center">
               <img src="/zero-paper_hub_logo.webp" alt="ZERO-PAPER HUB"
+                srcSet="/zero-paper_hub_logo-160.webp 160w, /zero-paper_hub_logo-320.webp 320w, /zero-paper_hub_logo.webp 480w"
+                sizes="128px"
                 width={480} height={240} loading="lazy" decoding="async"
                 className="h-16 w-auto rounded-lg object-contain bg-white/95 p-1.5" />
             </a>
