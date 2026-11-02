@@ -11,6 +11,9 @@ export default defineConfig(() => {
       exclude: ['lucide-react'],
     },
     build: {
+      // Every browser the site supports runs ES2022 natively; the default target makes
+      // Vite down-level syntax and ship transforms Lighthouse reports as legacy JavaScript.
+      target: 'es2022',
       rollupOptions: {
         input: {
           main: resolve(__dirname, 'index.html'),
