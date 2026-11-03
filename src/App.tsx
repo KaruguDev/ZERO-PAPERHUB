@@ -456,7 +456,7 @@ export function HomePage({ products = PRODUCTS }: HomePageProps) {
       <ProductsSection products={products} />
 
       {/* VALUES STRIP */}
-      <section id="values" className="py-20 bg-gradient-to-br from-green-900 via-green-800 to-blue-900">
+      <section id="values" className="py-20 scroll-mt-16 md:scroll-mt-24 bg-gradient-to-br from-green-900 via-green-800 to-blue-900">
         <div
           ref={valuesSection.ref}
           className={`max-w-7xl mx-auto px-6 transition-all duration-700 ${valuesSection.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
