@@ -20,7 +20,7 @@ function ProductCard({ product, featured }: ProductCardProps) {
 
   return (
     <article
-      className={`rounded-2xl border border-blue-100 bg-blue-50 p-6 md:p-8 ${
+      className={`rounded-2xl border border-blue-100 bg-white p-6 shadow-sm md:p-8 ${
         featured ? 'lg:grid lg:grid-cols-12 lg:items-center lg:gap-8' : ''
       }`}
     >
@@ -30,7 +30,7 @@ function ProductCard({ product, featured }: ProductCardProps) {
             Featured product
           </p>
         ) : null}
-        <h3 className="mt-2 text-[28px] font-semibold leading-[1.2] text-green-900">
+        <h3 className="mt-2 text-3xl font-black leading-[1.2] text-green-900">
           {product.name}
         </h3>
         <p className="mt-2 text-sm font-semibold leading-[1.4] text-blue-700">
@@ -84,15 +84,21 @@ export default function ProductsSection({ products }: ProductsSectionProps) {
     <section
       id={PRODUCTS_SECTION_ID}
       aria-labelledby={headingId}
-      className="bg-white py-12 md:py-16 scroll-mt-24 md:scroll-mt-32"
+      className="bg-gray-50 py-28 scroll-mt-24 md:scroll-mt-32"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2
-          id={headingId}
-          className="mb-8 text-[28px] font-semibold leading-[1.2] text-green-900"
-        >
-          {PRODUCTS_NAV_LABEL}
-        </h2>
+      <div className="mx-auto max-w-7xl px-6">
+        {/* Same heading pattern as the other home-page sections: label, title, intro. */}
+        <div className="mb-16 text-center">
+          <span className="mb-3 block text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
+            What We Build
+          </span>
+          <h2 id={headingId} className="mb-4 text-4xl font-black text-green-900 md:text-5xl">
+            {PRODUCTS_NAV_LABEL}
+          </h2>
+          <p className="mx-auto max-w-xl text-gray-500">
+            Digital products from ZERO-PAPER HUB, built to take everyday workflows off paper.
+          </p>
+        </div>
 
         <div className={`grid gap-4 sm:gap-6 lg:gap-8 ${featured ? '' : 'lg:grid-cols-2'}`}>
           {products.map((product) => (
