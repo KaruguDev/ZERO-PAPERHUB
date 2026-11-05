@@ -84,7 +84,7 @@ export default function ProductsSection({ products }: ProductsSectionProps) {
     <section
       id={PRODUCTS_SECTION_ID}
       aria-labelledby={headingId}
-      className="bg-gray-50 py-28 scroll-mt-24 md:scroll-mt-32"
+      className="bg-gray-50 py-28"
     >
       <div className="mx-auto max-w-7xl px-6">
         {/* Same heading pattern as the other home-page sections: label, title, intro. */}
