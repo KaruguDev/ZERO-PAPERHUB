@@ -191,10 +191,13 @@ describe('Phase 1 Products discovery navigation contracts', () => {
     const products = document.getElementById(PRODUCTS_SECTION_ID);
     expect(products).not.toBeNull();
 
-    // The fixed home header measures up to 80px below md and up to 120px at md+,
-    // so the anchor target reserves 96px and 128px of scroll margin respectively.
-    expect(products!.className).toContain('scroll-mt-24');
-    expect(products!.className).toContain('md:scroll-mt-32');
+    // The fixed home header measures up to 80px below md and up to 120px at md+.
+    // Products clears it the same way every other home-page section does: with
+    // 112px (py-28) of top padding and no extra scroll margin. A scroll margin on
+    // top of that padding is what left a large empty gap above the heading after
+    // jumping to #products, so it must not come back.
+    expect(products!.className).toContain('py-28');
+    expect(products!.className).not.toMatch(/scroll-mt-/);
   });
 
   it('closes the mobile menu after a visitor selects Products', () => {
